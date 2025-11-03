@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-.github/*
+.github/copilot-instructions.md
 
 # Editor directories and files
 .vscode/*
