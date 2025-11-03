@@ -36,63 +36,69 @@ type VerseLookupResponse = {
   verse_id: string;
 };
 
-// Map MorphGNT single-letter codes to our internal format
+// Map MorphGNT single-letter codes to our internal format (full names)
 const POS_MAP: Record<string, string> = {
   'N': 'noun',
   'V': 'verb',
   'RA': 'article',
-  'RD': 'pron',
-  'RR': 'pron',
-  'RP': 'pron',
-  'P': 'prep',
-  'C': 'conj',
-  'D': 'adv',
-  'A': 'adj',
-  'I': 'interj',
-  'X': 'part'
+  'RD': 'pronoun',
+  'RR': 'pronoun',
+  'RP': 'pronoun',
+  'P': 'preposition',
+  'C': 'conjunction',
+  'D': 'adverb',
+  'A': 'adjective',
+  'I': 'interjection',
+  'X': 'particle'
 };
 
 const CASE_MAP: Record<string, string> = {
-  'N': 'nom',
-  'G': 'gen',
-  'D': 'dat',
-  'A': 'acc',
-  'V': 'voc'
+  'N': 'nominative',
+  'G': 'genitive',
+  'D': 'dative',
+  'A': 'accusative',
+  'V': 'vocative'
 };
 
 const NUMBER_MAP: Record<string, string> = {
-  'S': 'sg',
-  'P': 'pl'
+  'S': 'singular',
+  'P': 'plural'
 };
 
 const GENDER_MAP: Record<string, string> = {
-  'M': 'masc',
-  'F': 'fem',
-  'N': 'neut'
+  'M': 'masculine',
+  'F': 'feminine',
+  'N': 'neuter'
 };
 
 const TENSE_MAP: Record<string, string> = {
-  'P': 'pres',
-  'I': 'impf',
-  'F': 'fut',
-  'A': 'aor',
-  'X': 'perf',
-  'Y': 'plup'
+  'P': 'present',
+  'I': 'imperfect',
+  'F': 'future',
+  'A': 'aorist',
+  'X': 'perfect',
+  'Y': 'pluperfect'
 };
 
 const VOICE_MAP: Record<string, string> = {
-  'A': 'act',
-  'M': 'mid',
-  'P': 'pass'
+  'A': 'active',
+  'M': 'middle',
+  'P': 'passive'
 };
 
 const MOOD_MAP: Record<string, string> = {
-  'I': 'ind',
-  'S': 'subj',
-  'O': 'opt',
-  'N': 'inf',
-  'P': 'part',
-  'M': 'impv'
+  'I': 'indicative',
+  'S': 'subjunctive',
+  'O': 'optative',
+  'N': 'infinitive',
+  'P': 'participle',
+  'M': 'imperative'
+};
+
+const PERSON_MAP: Record<string, string> = {
+  '1': 'first',
+  '2': 'second',
+  '3': 'third'
 };
 
 function decodeParse(w: MorphWord): Partial<ParseFields> | undefined {
@@ -105,7 +111,7 @@ function decodeParse(w: MorphWord): Partial<ParseFields> | undefined {
   if (w.tense && TENSE_MAP[w.tense]) fields.tense = TENSE_MAP[w.tense];
   if (w.voice && VOICE_MAP[w.voice]) fields.voice = VOICE_MAP[w.voice];
   if (w.mood && MOOD_MAP[w.mood]) fields.mood = MOOD_MAP[w.mood];
-  if (w.person) fields.person = w.person;
+  if (w.person && PERSON_MAP[w.person]) fields.person = PERSON_MAP[w.person];
   
   return Object.keys(fields).length > 0 ? fields : undefined;
 }
