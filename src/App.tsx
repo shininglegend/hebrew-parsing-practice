@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { loadVerse } from "./api";
-import { FIELD_SPECS, formatRef, scoreParse } from "./utils";
-import type { DrillAnswer, Verse, Word } from "./types";
+import { FIELD_SPECS, formatRef, normalizeMissing, scoreParse } from "./utils";
+import type { DrillAnswer, ParseFields, Verse, Word } from "./types";
 
 type State =
   | { kind: "idle" }
@@ -11,14 +11,30 @@ type State =
 
 function WordCard({
   w,
+  answer,
   onChange,
   disabled
 }: {
   w: Word;
+  answer?: DrillAnswer;
   onChange: (id: string, key: string, val: string) => void;
   disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  
+  // Helper to determine field status
+  const getFieldStatus = (key: keyof ParseFields): "correct" | "incorrect" | "neutral" => {
+    const userValue = normalizeMissing(answer?.[key]);
+    const goldValue = normalizeMissing(w.parse?.[key]);
+    
+    // If no answer yet, neutral
+    if (userValue === undefined) return "neutral";
+    // If no gold value (field not applicable), neutral
+    if (goldValue === undefined) return "neutral";
+    // Compare values
+    return userValue === goldValue ? "correct" : "incorrect";
+  };
+  
   return (
     <div className="card space-y-2">
       <div className="flex items-center gap-3">
@@ -30,22 +46,32 @@ function WordCard({
       </div>
       {open && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {FIELD_SPECS.map(f => (
-            <label key={f.key} className="flex flex-col gap-1">
-              <span className="text-xs text-slate-600">{f.label}</span>
-              <select
-                className="select"
-                disabled={disabled}
-                onChange={e => onChange(w.id, f.key, e.target.value)}
-                defaultValue=""
-              >
-                <option value="">— choose —</option>
-                {f.options.map(o => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </label>
-          ))}
+          {FIELD_SPECS.map(f => {
+            const status = getFieldStatus(f.key);
+            let selectClassName = "select";
+            if (status === "correct") {
+              selectClassName += " !border-green-500 !bg-green-50";
+            } else if (status === "incorrect") {
+              selectClassName += " !border-red-500 !bg-red-50";
+            }
+            
+            return (
+              <label key={f.key} className="flex flex-col gap-1">
+                <span className="text-xs text-slate-600">{f.label}</span>
+                <select
+                  className={selectClassName}
+                  disabled={disabled}
+                  onChange={e => onChange(w.id, f.key, e.target.value)}
+                  value={answer?.[f.key] ?? ""}
+                >
+                  <option value="">— choose —</option>
+                  {f.options.map(o => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              </label>
+            );
+          })}
         </div>
       )}
     </div>
@@ -181,12 +207,12 @@ export default function App() {
         <>
           <div className="grid gap-3 md:grid-cols-2">
             {verse.words.map(w => (
-              <WordCard key={w.id} w={w} onChange={setAnswer} />
+              <WordCard key={w.id} w={w} answer={answers[w.id]} onChange={setAnswer} />
             ))}
           </div>
           <Results verse={verse} answers={answers} />
           <div className="text-xs text-slate-500">
-            Notes: fields marked “—” are intentionally ignored in grading; only gold fields present in the data are counted.
+            Notes: fields marked "—" are intentionally ignored in grading; only gold fields present in the data are counted.
           </div>
         </>
       )}
