@@ -17,6 +17,9 @@ export function ReverseParser() {
   const [state, setState] = useState<State>({ kind: "idle" });
   const [userInputs, setUserInputs] = useState<Record<string, string>>({});
   const [revealed, setRevealed] = useState(false);
+  const [ignoreAccents, setIgnoreAccents] = useState(false);
+  const [ignoreBreathing, setIgnoreBreathing] = useState(false);
+  const [ignoreCase, setIgnoreCase] = useState(false);
   const verseData = state.kind === "loaded" ? state.verse : undefined;
 
   function load() {
@@ -48,9 +51,41 @@ export function ReverseParser() {
     setUserInputs(prev => ({ ...prev, [wordId]: value }));
   }
 
+  function normalizeForComparison(text: string): string {
+    // Start with NFD normalization to decompose precomposed characters
+    let normalized = text.normalize('NFD');
+    
+    if (ignoreAccents) {
+      // Remove accent marks
+      normalized = normalized.replace(/[\u0300-\u0304\u0308\u0340-\u0344\u0345]/g, '');
+    }
+    if (ignoreBreathing) {
+      // Remove breathing marks
+      normalized = normalized.replace(/[\u0313\u0314]/g, '');
+    }
+    
+    // Recompose to NFC for consistent comparison
+    normalized = normalized.normalize('NFC');
+    
+    if (ignoreCase) {
+      // Convert to lowercase for case-insensitive comparison
+      normalized = normalized.toLowerCase();
+    }
+    
+    // Always remove punctuation
+    normalized = normalized.replace(/[.,;:!?·—\-\s]/g, '');
+    
+    return normalized;
+  }
+
   function isCorrect(word: Word): boolean {
     const input = userInputs[word.id]?.trim() || "";
-    return input === word.surface;
+    if (!input) return false;
+    
+    const normalizedInput = normalizeForComparison(input);
+    const normalizedSurface = normalizeForComparison(word.surface);
+    
+    return normalizedInput === normalizedSurface;
   }
 
   function getInputClassName(word: Word): string {
@@ -105,6 +140,40 @@ export function ReverseParser() {
         error={state.kind === "error" ? state.msg : undefined}
         hideVerse={true}
       />
+
+      {/* Toggles for ignoring diacritics */}
+      <div className="card">
+        <div className="flex gap-4 items-center flex-wrap">
+          <span className="text-sm font-medium text-slate-700">Options:</span>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={ignoreAccents}
+              onChange={(e) => setIgnoreAccents(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <span className="text-sm">Ignore accents (΄ ` ῀)</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={ignoreBreathing}
+              onChange={(e) => setIgnoreBreathing(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <span className="text-sm">Ignore breathing marks (᾿ ῾)</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={ignoreCase}
+              onChange={(e) => setIgnoreCase(e.target.checked)}
+              className="w-4 h-4"
+            />
+            <span className="text-sm">Ignore case (Α vs α)</span>
+          </label>
+        </div>
+      </div>
 
       {verseData && (
         <div className="space-y-4">
