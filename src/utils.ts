@@ -83,6 +83,49 @@ export function scoreParse(
   return { correct, total, details };
 }
 
-export function formatRef(input: string) {
-  return input.trim().replace(/\s+/g, " ");
+// New Testament books in canonical order
+export const NT_BOOKS = [
+  { name: "Matthew", abbrev: "Mt" },
+  { name: "Mark", abbrev: "Mk" },
+  { name: "Luke", abbrev: "Lk" },
+  { name: "John", abbrev: "Jn" },
+  { name: "Acts", abbrev: "Acts" },
+  { name: "Romans", abbrev: "Rom" },
+  { name: "1 Corinthians", abbrev: "1Cor" },
+  { name: "2 Corinthians", abbrev: "2Cor" },
+  { name: "Galatians", abbrev: "Gal" },
+  { name: "Ephesians", abbrev: "Eph" },
+  { name: "Philippians", abbrev: "Phil" },
+  { name: "Colossians", abbrev: "Col" },
+  { name: "1 Thessalonians", abbrev: "1Thess" },
+  { name: "2 Thessalonians", abbrev: "2Thess" },
+  { name: "1 Timothy", abbrev: "1Tim" },
+  { name: "2 Timothy", abbrev: "2Tim" },
+  { name: "Titus", abbrev: "Titus" },
+  { name: "Philemon", abbrev: "Phlm" },
+  { name: "Hebrews", abbrev: "Heb" },
+  { name: "James", abbrev: "Jas" },
+  { name: "1 Peter", abbrev: "1Pet" },
+  { name: "2 Peter", abbrev: "2Pet" },
+  { name: "1 John", abbrev: "1Jn" },
+  { name: "2 John", abbrev: "2Jn" },
+  { name: "3 John", abbrev: "3Jn" },
+  { name: "Jude", abbrev: "Jude" },
+  { name: "Revelation", abbrev: "Rev" }
+];
+
+// Books with only one chapter (need to hardcode chapter 1)
+const SINGLE_CHAPTER_BOOKS = ["Phlm", "2Jn", "3Jn", "Jude"];
+
+export function formatRef(book: string, chapter: string, verse: string): string {
+  const bookAbbrev = book.trim();
+  let chap = chapter.trim();
+  const v = verse.trim();
+  
+  // For single-chapter books, force chapter to be "1"
+  if (SINGLE_CHAPTER_BOOKS.includes(bookAbbrev)) {
+    chap = "1";
+  }
+  
+  return `${bookAbbrev} ${chap}:${v}`;
 }
