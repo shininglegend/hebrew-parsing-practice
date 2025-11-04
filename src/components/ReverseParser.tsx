@@ -28,8 +28,8 @@ export function ReverseParser() {
     setUserInputs({});
     setRevealed(false);
     loadVerse(formatted)
-      .then(v => setState({ kind: "loaded", verse: v }))
-      .catch(e => setState({ kind: "error", msg: e.message || "error" }));
+      .then((v) => setState({ kind: "loaded", verse: v }))
+      .catch((e) => setState({ kind: "error", msg: e.message || "error" }));
   }
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function ReverseParser() {
   }, []);
 
   const surfaceLine = useMemo(
-    () => verseData?.words.map(w => w.surface).join(" ") ?? "",
+    () => verseData?.words.map((w) => w.surface).join(" ") ?? "",
     [verseData]
   );
 
@@ -48,64 +48,68 @@ export function ReverseParser() {
   }
 
   function handleInputChange(wordId: string, value: string) {
-    setUserInputs(prev => ({ ...prev, [wordId]: value }));
+    setUserInputs((prev) => ({ ...prev, [wordId]: value }));
   }
 
   function normalizeForComparison(text: string): string {
     // Start with NFD normalization to decompose precomposed characters
-    let normalized = text.normalize('NFD');
-    
+    let normalized = text.normalize("NFD");
+
     if (ignoreAccents) {
       // Remove accent marks
-      normalized = normalized.replace(/[\u0300-\u0304\u0308\u0340-\u0344\u0345]/g, '');
+      normalized = normalized.replace(
+        /[\u0300-\u0304\u0308\u0340-\u0344\u0345]/g,
+        ""
+      );
     }
     if (ignoreBreathing) {
       // Remove breathing marks
-      normalized = normalized.replace(/[\u0313\u0314]/g, '');
+      normalized = normalized.replace(/[\u0313\u0314]/g, "");
     }
-    
+
     // Recompose to NFC for consistent comparison
-    normalized = normalized.normalize('NFC');
-    
+    normalized = normalized.normalize("NFC");
+
     if (ignoreCase) {
       // Convert to lowercase for case-insensitive comparison
       normalized = normalized.toLowerCase();
     }
-    
+
     // Always remove punctuation
-    normalized = normalized.replace(/[.,;:!?·—\-\s]/g, '');
-    
+    normalized = normalized.replace(/[.,;:!?·—\-\s]/g, "");
+
     return normalized;
   }
 
   function isCorrect(word: Word): boolean {
     const input = userInputs[word.id]?.trim() || "";
     if (!input) return false;
-    
+
     const normalizedInput = normalizeForComparison(input);
     const normalizedSurface = normalizeForComparison(word.surface);
-    
+
     return normalizedInput === normalizedSurface;
   }
 
   function getInputClassName(word: Word): string {
     const input = userInputs[word.id]?.trim() || "";
     if (!input) return "input text-center";
-    if (isCorrect(word)) return "input text-center !border-green-500 !bg-green-50";
+    if (isCorrect(word))
+      return "input text-center !border-green-500 !bg-green-50";
     return "input text-center";
   }
 
   // Get all parse fields to display for a word
   function getDisplayFields(word: Word) {
     const fields: { label: string; value: string }[] = [];
-    
-    FIELD_SPECS.forEach(spec => {
+
+    FIELD_SPECS.forEach((spec) => {
       const value = word.parse?.[spec.key];
       if (value !== undefined) {
         fields.push({ label: spec.label, value });
       }
     });
-    
+
     return fields;
   }
 
@@ -113,14 +117,14 @@ export function ReverseParser() {
     <div className="mx-auto max-w-7xl p-4 space-y-4">
       <div className="flex items-center gap-4">
         <h1 className="text-2xl font-bold">Reverse Parser</h1>
-        <a 
-          href="#/" 
+        <a
+          href="#/"
           className="text-sm text-blue-600 hover:underline"
           onClick={(e) => {
             e.preventDefault();
-            window.history.pushState({}, '', '#/');
-            window.location.hash = '#/';
-            window.dispatchEvent(new Event('locationchange'));
+            window.history.pushState({}, "", "#/");
+            window.location.hash = "#/";
+            window.dispatchEvent(new Event("locationchange"));
           }}
         >
           ← Back to Parser Drill
@@ -177,6 +181,40 @@ export function ReverseParser() {
 
       {verseData && (
         <div className="space-y-4">
+          {/* Progress indicator */}
+          {(() => {
+            const totalWords = verseData.words.length;
+            const correctWords = verseData.words.filter((w) =>
+              isCorrect(w)
+            ).length;
+            const percentage =
+              totalWords > 0
+                ? Math.round((correctWords / totalWords) * 100)
+                : 0;
+
+            return (
+              <div className="card">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-slate-700">
+                    Progress:
+                  </span>
+                  <div className="flex-1 bg-slate-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className="bg-green-500 h-full transition-all duration-300 ease-out"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700 min-w-[4rem]">
+                    {correctWords} / {totalWords}
+                  </span>
+                  <span className="text-sm text-slate-600">
+                    ({percentage}%)
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Row 1: Revealed verse text */}
           <div className="card">
             <div className="flex items-center justify-between gap-4">
@@ -202,7 +240,7 @@ export function ReverseParser() {
           {/* Row 2+: Word input boxes with morphology below */}
           <div className="overflow-x-auto">
             <div className="flex pb-4" style={{ minWidth: "max-content" }}>
-              {verseData.words.map(word => {
+              {verseData.words.map((word) => {
                 const boxWidth = getBoxWidth(word);
                 const displayFields = getDisplayFields(word);
                 const correct = isCorrect(word);
@@ -218,7 +256,9 @@ export function ReverseParser() {
                       type="text"
                       className={getInputClassName(word)}
                       value={userInputs[word.id] || ""}
-                      onChange={e => handleInputChange(word.id, e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(word.id, e.target.value)
+                      }
                       placeholder="..."
                       style={{ width: "100%" }}
                       disabled={revealed}
@@ -235,7 +275,7 @@ export function ReverseParser() {
                     {word.lemma && (
                       <div className="text-center">
                         <div className="text-xs font-semibold text-slate-700 break-words">
-                          {word.lemma}
+                          Lemma: {word.lemma}
                         </div>
                       </div>
                     )}
