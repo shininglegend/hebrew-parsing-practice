@@ -6,3 +6,5 @@ export { ParserDrill } from "./ParserDrill";
 export { Modal } from "./Modal";
 export { GrammarGuide } from "./GrammarGuide";
 export { MorphologyCharts } from "./MorphologyCharts";
+export { Help } from "./Help";
+export { Footer } from "./Footer"

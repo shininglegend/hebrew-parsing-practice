@@ -10,17 +10,17 @@ export default function App() {
     const handleLocationChange = () => {
       setCurrentPath(window.location.hash || "#/");
     };
-    
+
     const handlePopState = () => {
       handleLocationChange();
     };
-    
-    window.addEventListener('popstate', handlePopState);
-    window.addEventListener('locationchange', handleLocationChange);
-    
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("locationchange", handleLocationChange);
+
     return () => {
-      window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('locationchange', handleLocationChange);
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("locationchange", handleLocationChange);
     };
   }, []);
 

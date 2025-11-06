@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { loadVerse } from "../api";
 import { formatRef, FIELD_SPECS } from "../utils";
-import { VerseSelector, Modal, GrammarGuide, MorphologyCharts } from "./";
+import {
+  Footer,
+  GrammarGuide,
+  Help,
+  Modal,
+  MorphologyCharts,
+  VerseSelector,
+} from "./";
 import type { Verse, Word } from "../types";
 
 type State =
@@ -22,6 +29,7 @@ export function ReverseParser() {
   const [ignoreCase, setIgnoreCase] = useState(false);
   const [showGrammarGuide, setShowGrammarGuide] = useState(false);
   const [showMorphologyCharts, setShowMorphologyCharts] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const verseData = state.kind === "loaded" ? state.verse : undefined;
 
   function load() {
@@ -119,6 +127,9 @@ export function ReverseParser() {
     <div className="mx-auto max-w-7xl p-4 space-y-4">
       <div className="flex items-center gap-3 flex-wrap">
         <h1 className="text-2xl font-bold">Reverse Parser</h1>
+        <button onClick={() => setShowHelp(true)} className="btn text-sm">
+          Help
+        </button>
         <button
           onClick={() => setShowMorphologyCharts(true)}
           className="btn text-sm"
@@ -146,6 +157,10 @@ export function ReverseParser() {
       </div>
 
       {/* Modals */}
+      <Modal isOpen={showHelp} onClose={() => setShowHelp(false)} title="Help">
+        <Help />
+      </Modal>
+
       <Modal
         isOpen={showMorphologyCharts}
         onClose={() => setShowMorphologyCharts(false)}
@@ -341,21 +356,9 @@ export function ReverseParser() {
               lemma.
             </p>
           </div>
-
-          <hr />
-          <div className="text-xs text-slate-500">
-            Morphology data provided by{" "}
-            <a
-              className="text-blue-500"
-              href="https://github.com/morphgnt/morphgnt-api"
-            >
-              MorphGNT
-            </a>
-            <hr />
-            Copyright 2025 Titus Murphy. All rights reserved.
-          </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 }
