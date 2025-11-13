@@ -1,3 +1,4 @@
+import confetti from "canvas-confetti";
 import type { FieldSpec, ParseFields } from "./types";
 
 export const FIELD_SPECS: FieldSpec[] = [
@@ -192,4 +193,39 @@ export function isFieldRelevant(
   }
   
   return true;
+}
+
+// Trigger confetti celebration
+export function celebrateWithConfetti() {
+  const particleCount = 200;
+  
+  // From the left
+  confetti({
+    particleCount,
+    angle: 60,
+    spread: 55,
+    origin: { x: 0, y: 0.6 },
+    startVelocity: 55,
+    ticks: 350
+  });
+  
+  // From the right
+  confetti({
+    particleCount,
+    angle: 120,
+    spread: 55,
+    origin: { x: 1, y: 0.6 },
+    startVelocity: 55,
+    ticks: 350
+  });
+  
+  // From the top
+  confetti({
+    particleCount: particleCount * 1.5,
+    spread: 100,
+    origin: { x: 0.5, y: 1 },
+    startVelocity: 65,
+    gravity: 0.8,
+    ticks: 500
+  });
 }

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { loadVerse } from "../api";
-import { formatRef } from "../utils";
+import { formatRef, scoreParse, celebrateWithConfetti } from "../utils";
 import {
   Footer,
   Header,
@@ -29,6 +29,26 @@ export function ParserDrill() {
 
   function load() {
     const formatted = formatRef(selectedBook, chapter, verse);
+    setState({ kind: "loading", ref: formatted });
+    setAnswers({});
+    loadVerse(formatted)
+      .then((v) => {
+        setState({ kind: "loaded", verse: v });
+        // Initially select all words
+        setSelectedWordIds(new Set(v.words.map((w) => w.id)));
+      })
+      .catch((e) => setState({ kind: "error", msg: e.message || "error" }));
+  }
+
+  function handleNavigate(direction: 'prev' | 'next') {
+    const currentVerse = parseInt(verse);
+    if (isNaN(currentVerse)) return;
+    
+    const newVerse = direction === 'prev' ? currentVerse - 1 : currentVerse + 1;
+    if (newVerse < 1) return;
+    
+    setVerse(newVerse.toString());
+    const formatted = formatRef(selectedBook, chapter, newVerse.toString());
     setState({ kind: "loading", ref: formatted });
     setAnswers({});
     loadVerse(formatted)
@@ -69,6 +89,41 @@ export function ParserDrill() {
   const wordsToShow =
     verseData?.words.filter((w) => selectedWordIds.has(w.id)) ?? [];
 
+  // Track if confetti has been triggered for this verse
+  const confettiTriggered = useRef(false);
+
+  // Check if all selected words are correctly parsed
+  useEffect(() => {
+    if (!verseData || wordsToShow.length === 0 || confettiTriggered.current) return;
+
+    // Check if all selected words have been answered and all are correct
+    const allAnswered = wordsToShow.every((w) => {
+      const answer = answers[w.id];
+      if (!answer) return false;
+      // Check if at least one field has been filled
+      return Object.values(answer).some((val) => val && val.trim() !== "");
+    });
+
+    if (!allAnswered) return;
+
+    // Check if all answers are correct
+    const allCorrect = wordsToShow.every((w) => {
+      const answer = answers[w.id];
+      const score = scoreParse(w.parse, answer || {});
+      return score.total > 0 && score.correct === score.total;
+    });
+
+    if (allCorrect) {
+      celebrateWithConfetti();
+      confettiTriggered.current = true;
+    }
+  }, [answers, verseData, wordsToShow]);
+
+  // Reset confetti trigger when verse changes
+  useEffect(() => {
+    confettiTriggered.current = false;
+  }, [verseData]);
+
   return (
     <>
       <Header currentMode="drill" />
@@ -87,6 +142,7 @@ export function ParserDrill() {
         words={verseData?.words}
         selectedWordIds={selectedWordIds}
         onWordToggle={toggleWord}
+        onNavigate={handleNavigate}
       />
 
       {verseData && wordsToShow.length > 0 && (

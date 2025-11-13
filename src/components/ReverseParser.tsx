@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { loadVerse } from "../api";
-import { formatRef, FIELD_SPECS } from "../utils";
+import { formatRef, FIELD_SPECS, celebrateWithConfetti } from "../utils";
 import {
   Footer,
   Header,
@@ -28,6 +28,23 @@ export function ReverseParser() {
 
   function load() {
     const formatted = formatRef(selectedBook, chapter, verse);
+    setState({ kind: "loading", ref: formatted });
+    setUserInputs({});
+    setRevealed(false);
+    loadVerse(formatted)
+      .then((v) => setState({ kind: "loaded", verse: v }))
+      .catch((e) => setState({ kind: "error", msg: e.message || "error" }));
+  }
+
+  function handleNavigate(direction: 'prev' | 'next') {
+    const currentVerse = parseInt(verse);
+    if (isNaN(currentVerse)) return;
+    
+    const newVerse = direction === 'prev' ? currentVerse - 1 : currentVerse + 1;
+    if (newVerse < 1) return;
+    
+    setVerse(newVerse.toString());
+    const formatted = formatRef(selectedBook, chapter, newVerse.toString());
     setState({ kind: "loading", ref: formatted });
     setUserInputs({});
     setRevealed(false);
@@ -117,6 +134,27 @@ export function ReverseParser() {
     return fields;
   }
 
+  // Track if confetti has been triggered for this verse
+  const confettiTriggered = useRef(false);
+
+  // Check if all words are correctly typed
+  useEffect(() => {
+    if (!verseData || verseData.words.length === 0 || confettiTriggered.current || revealed) return;
+
+    // Check if all words are correct
+    const allCorrect = verseData.words.every((w) => isCorrect(w));
+
+    if (allCorrect) {
+      celebrateWithConfetti();
+      confettiTriggered.current = true;
+    }
+  }, [userInputs, verseData, revealed]);
+
+  // Reset confetti trigger when verse changes
+  useEffect(() => {
+    confettiTriggered.current = false;
+  }, [verseData]);
+
   return (
     <>
       <Header currentMode="reverse" />
@@ -133,6 +171,7 @@ export function ReverseParser() {
         loading={state.kind === "loading"}
         error={state.kind === "error" ? state.msg : undefined}
         hideVerse={true}
+        onNavigate={handleNavigate}
       />
 
       {/* Toggles for ignoring diacritics */}

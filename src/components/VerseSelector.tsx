@@ -16,6 +16,7 @@ interface VerseSelectorProps {
   words?: Word[];
   selectedWordIds?: Set<string>;
   onWordToggle?: (wordId: string) => void;
+  onNavigate?: (direction: 'prev' | 'next') => void;
 }
 
 export function VerseSelector({
@@ -32,10 +33,14 @@ export function VerseSelector({
   hideVerse,
   words,
   selectedWordIds,
-  onWordToggle
+  onWordToggle,
+  onNavigate
 }: VerseSelectorProps) {
   const hasWords = words && words.length > 0;
   const showWordSelection = hasWords && onWordToggle && selectedWordIds;
+  
+  const currentVerse = parseInt(verse) || 1;
+  const canGoBack = currentVerse > 1;
   
   return (
     <div className="card flex flex-col gap-3">
@@ -67,6 +72,27 @@ export function VerseSelector({
           placeholder="Vs"
         />
         <button className="btn" onClick={onLoad}>Load</button>
+        
+        {onNavigate && (
+          <>
+            <button 
+              className="btn"
+              onClick={() => onNavigate('prev')}
+              disabled={!canGoBack || loading}
+              title="Previous verse"
+            >
+              ← Back
+            </button>
+            <button 
+              className="btn"
+              onClick={() => onNavigate('next')}
+              disabled={loading}
+              title="Next verse"
+            >
+              Next →
+            </button>
+          </>
+        )}
       </div>
       
       {!hideVerse && showWordSelection && (
