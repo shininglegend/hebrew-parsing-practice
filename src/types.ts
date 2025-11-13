@@ -6,6 +6,20 @@ export type ParseFields = {
   person?: string;   // 1st, 2nd, 3rd person
   stem?: string;     // Verb stem/binyan (qal, niphal, piel, etc.)
   tense?: string;    // Verb tense (perfect, imperfect, imperative, etc.)
+  
+  // Additional Hebrew-specific fields
+  prefix?: string;   // Prefixes like ב, ל, כ, מ, ו, ה, ש
+  suffix?: string;   // Suffix type (pronominal, directional, etc.)
+  suffixPerson?: string;  // Person of pronominal suffix
+  suffixGender?: string;  // Gender of pronominal suffix
+  suffixNumber?: string;  // Number of pronominal suffix
+  
+  // Additional grammatical features
+  nounType?: string;      // Common, proper, gentilic
+  pronounType?: string;   // Personal, demonstrative, relative, interrogative
+  particleType?: string;  // Definite article, negative, interrogative, etc.
+  numeralType?: string;   // Cardinal, ordinal
+  adjectiveType?: string; // Attributive, predicative
 };
 
 export type Word = {
@@ -17,7 +31,7 @@ export type Word = {
 };
 
 export type Verse = {
-  ref: string;         // "Jn 1:1"
+  ref: string;         // "Gen 1:1"
   words: Word[];
 };
 

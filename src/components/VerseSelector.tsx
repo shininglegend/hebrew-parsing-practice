@@ -51,7 +51,7 @@ export function VerseSelector({
           onChange={e => onBookChange(e.target.value)}
         >
           {OT_BOOKS.map(b => (
-            <option key={b.abbrev} value={b.abbrev}>{b.name}</option>
+            <option key={b.abbrev} value={b.filename}>{b.name}</option>
           ))}
         </select>
         <input

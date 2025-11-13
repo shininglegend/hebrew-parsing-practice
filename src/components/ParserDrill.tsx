@@ -17,7 +17,7 @@ type State =
   | { kind: "error"; msg: string };
 
 export function ParserDrill() {
-  const [selectedBook, setSelectedBook] = useState("Jn");
+  const [selectedBook, setSelectedBook] = useState("Genesis");
   const [chapter, setChapter] = useState("1");
   const [verse, setVerse] = useState("1");
   const [state, setState] = useState<State>({ kind: "idle" });

@@ -2,13 +2,13 @@ import confetti from "canvas-confetti";
 import type { FieldSpec, ParseFields } from "./types";
 
 export const FIELD_SPECS: FieldSpec[] = [
-  { key: "pos",    label: "Part of Speech", options: ["noun","verb","adjective","preposition","pronoun","conjunction","particle","adverb","article","interjection"] },
+  { key: "pos",    label: "Part of Speech", options: ["noun","noun (common)","noun (proper)","noun (gentilic)","verb","adjective","numeral","preposition","pronoun","conjunction","particle","adverb","interjection","—"] },
   { key: "state",  label: "State",          options: ["absolute","construct","determined","—"] },
   { key: "gender", label: "Gender",         options: ["masculine","feminine","common","—"] },
   { key: "number", label: "Number",         options: ["singular","plural","dual","—"] },
   { key: "person", label: "Person",         options: ["first","second","third","—"] },
-  { key: "stem",   label: "Stem",           options: ["qal","niphal","piel","pual","hiphil","hophal","hithpael","—"] },
-  { key: "tense",  label: "Tense",          options: ["perfect","imperfect","imperative","infinitive","participle","—"] },
+  { key: "stem",   label: "Stem/Binyan",    options: ["qal","qal passive","niphal","piel","pual","hiphil","hophal","hithpael","polel","polal","poel","poal","pilpel","hithpalpel","nithpael","—"] },
+  { key: "tense",  label: "Tense/Aspect",   options: ["perfect (qatal)","imperfect (yiqtol)","sequential perfect","sequential imperfect","cohortative","jussive","imperative","infinitive absolute","infinitive construct","participle active","participle passive","—"] },
 ];
 
 // Map short forms to long forms (for display/comparison)
@@ -25,15 +25,20 @@ const VALUE_NORMALIZATION: Record<string, string> = {
   'sing': 'singular',
   'plur': 'plural',
   'perf': 'perfect',
+  'perfect': 'perfect (qatal)',
   'imperf': 'imperfect',
+  'imperfect': 'imperfect (yiqtol)',
   'imper': 'imperative',
   'inf': 'infinitive',
+  'infinitive': 'infinitive construct',
   'part': 'participle',
+  'participle': 'participle active',
   'adj': 'adjective',
   'prep': 'preposition',
   'pron': 'pronoun',
   'conj': 'conjunction',
   'adv': 'adverb',
+  'num': 'numeral',
   '1': 'first',
   '2': 'second',
   '3': 'third',
@@ -66,83 +71,87 @@ export function scoreParse(
 }
 
 // Old Testament books in canonical order (Hebrew Bible / Tanakh)
+// See also: Book list in api.ts 
 export const OT_BOOKS = [
   // Torah / Pentateuch
-  { name: "Genesis", abbrev: "Gen" },
-  { name: "Exodus", abbrev: "Exod" },
-  { name: "Leviticus", abbrev: "Lev" },
-  { name: "Numbers", abbrev: "Num" },
-  { name: "Deuteronomy", abbrev: "Deut" },
+  { name: "Genesis", abbrev: "Gen", filename: "genesis" },
+  { name: "Exodus", abbrev: "Exod", filename: "exodus" },
+  { name: "Leviticus", abbrev: "Lev", filename: "leviticus" },
+  { name: "Numbers", abbrev: "Num", filename: "numbers" },
+  { name: "Deuteronomy", abbrev: "Deut", filename: "deuteronomy" },
   // Historical Books
-  { name: "Joshua", abbrev: "Josh" },
-  { name: "Judges", abbrev: "Judg" },
-  { name: "Ruth", abbrev: "Ruth" },
-  { name: "1 Samuel", abbrev: "1Sam" },
-  { name: "2 Samuel", abbrev: "2Sam" },
-  { name: "1 Kings", abbrev: "1Kgs" },
-  { name: "2 Kings", abbrev: "2Kgs" },
-  { name: "1 Chronicles", abbrev: "1Chr" },
-  { name: "2 Chronicles", abbrev: "2Chr" },
-  { name: "Ezra", abbrev: "Ezra" },
-  { name: "Nehemiah", abbrev: "Neh" },
-  { name: "Esther", abbrev: "Esth" },
+  { name: "Joshua", abbrev: "Josh", filename: "joshua" },
+  { name: "Judges", abbrev: "Judg", filename: "judges" },
+  { name: "Ruth", abbrev: "Ruth", filename: "ruth" },
+  { name: "1 Samuel", abbrev: "1Sam", filename: "isamuel" },
+  { name: "2 Samuel", abbrev: "2Sam", filename: "iisamuel" },
+  { name: "1 Kings", abbrev: "1Kgs", filename: "ikings" },
+  { name: "2 Kings", abbrev: "2Kgs", filename: "iikings" },
+  { name: "1 Chronicles", abbrev: "1Chr", filename: "ichronicles" },
+  { name: "2 Chronicles", abbrev: "2Chr", filename: "iichronicles" },
+  { name: "Ezra", abbrev: "Ezra", filename: "ezra" },
+  { name: "Nehemiah", abbrev: "Neh", filename: "nehemiah" },
+  { name: "Esther", abbrev: "Esth", filename: "esther" },
   // Wisdom Literature
-  { name: "Job", abbrev: "Job" },
-  { name: "Psalms", abbrev: "Ps" },
-  { name: "Proverbs", abbrev: "Prov" },
-  { name: "Ecclesiastes", abbrev: "Eccl" },
-  { name: "Song of Solomon", abbrev: "Song" },
+  { name: "Job", abbrev: "Job", filename: "job" },
+  { name: "Psalms", abbrev: "Ps", filename: "psalms" },
+  { name: "Proverbs", abbrev: "Prov", filename: "proverbs" },
+  { name: "Ecclesiastes", abbrev: "Eccl", filename: "ecclesiastes" },
+  { name: "Song of Solomon", abbrev: "Song", filename: "songofsolomon" },
   // Major Prophets
-  { name: "Isaiah", abbrev: "Isa" },
-  { name: "Jeremiah", abbrev: "Jer" },
-  { name: "Lamentations", abbrev: "Lam" },
-  { name: "Ezekiel", abbrev: "Ezek" },
-  { name: "Daniel", abbrev: "Dan" },
+  { name: "Isaiah", abbrev: "Isa", filename: "isaiah" },
+  { name: "Jeremiah", abbrev: "Jer", filename: "jeremiah" },
+  { name: "Lamentations", abbrev: "Lam", filename: "lamentations" },
+  { name: "Ezekiel", abbrev: "Ezek", filename: "ezekiel" },
+  { name: "Daniel", abbrev: "Dan", filename: "daniel" },
   // Minor Prophets
-  { name: "Hosea", abbrev: "Hos" },
-  { name: "Joel", abbrev: "Joel" },
-  { name: "Amos", abbrev: "Amos" },
-  { name: "Obadiah", abbrev: "Obad" },
-  { name: "Jonah", abbrev: "Jonah" },
-  { name: "Micah", abbrev: "Mic" },
-  { name: "Nahum", abbrev: "Nah" },
-  { name: "Habakkuk", abbrev: "Hab" },
-  { name: "Zephaniah", abbrev: "Zeph" },
-  { name: "Haggai", abbrev: "Hag" },
-  { name: "Zechariah", abbrev: "Zech" },
-  { name: "Malachi", abbrev: "Mal" }
+  { name: "Hosea", abbrev: "Hos", filename: "hosea" },
+  { name: "Joel", abbrev: "Joel", filename: "joel" },
+  { name: "Amos", abbrev: "Amos", filename: "amos" },
+  { name: "Obadiah", abbrev: "Obad", filename: "obadiah" },
+  { name: "Jonah", abbrev: "Jonah", filename: "jonah" },
+  { name: "Micah", abbrev: "Mic", filename: "micah" },
+  { name: "Nahum", abbrev: "Nah", filename: "nahum" },
+  { name: "Habakkuk", abbrev: "Hab", filename: "habakkuk" },
+  { name: "Zephaniah", abbrev: "Zeph", filename: "zephaniah" },
+  { name: "Haggai", abbrev: "Hag", filename: "haggai" },
+  { name: "Zechariah", abbrev: "Zech", filename: "zechariah" },
+  { name: "Malachi", abbrev: "Mal", filename: "malachi" }
 ];
 
 // Books with only one chapter (need to hardcode chapter 1)
-const SINGLE_CHAPTER_BOOKS = ["Obad"];
+const SINGLE_CHAPTER_BOOKS = ["Obadiah", "Obad"];
 
 export function formatRef(book: string, chapter: string, verse: string): string {
-  const bookAbbrev = book.trim();
+  const bookName = book.trim();
   let chap = chapter.trim();
   const v = verse.trim();
   
   // For single-chapter books, force chapter to be "1"
-  if (SINGLE_CHAPTER_BOOKS.includes(bookAbbrev)) {
+  if (SINGLE_CHAPTER_BOOKS.includes(bookName)) {
     chap = "1";
   }
   
-  return `${bookAbbrev} ${chap}:${v}`;
+  return `${bookName} ${chap}:${v}`;
 }
 
 // Define which fields are relevant for each part of speech in Hebrew
 type FieldKey = keyof ParseFields;
 
 export const RELEVANT_FIELDS: Record<string, FieldKey[]> = {
-  noun: ["state", "gender", "number"],
-  verb: ["stem", "tense", "person", "gender", "number"],
-  adjective: ["state", "gender", "number"],
-  pronoun: ["person", "gender", "number"],
-  article: ["state", "gender", "number"],
-  preposition: [],
-  conjunction: [],
-  adverb: [],
-  particle: [],
-  interjection: [],
+  "noun": ["state", "gender", "number"],
+  "noun (common)": ["state", "gender", "number"],
+  "noun (proper)": ["state", "gender", "number"],
+  "noun (gentilic)": ["state", "gender", "number"],
+  "verb": ["stem", "tense", "person", "gender", "number"],
+  "adjective": ["state", "gender", "number"],
+  "numeral": ["state", "gender", "number"],
+  "pronoun": ["person", "gender", "number"],
+  "preposition": [],
+  "conjunction": [],
+  "adverb": [],
+  "particle": [],
+  "interjection": [],
 };
 
 export function isFieldRelevant(
@@ -167,15 +176,12 @@ export function isFieldRelevant(
     
     // Hebrew verbs: infinitives and participles have special rules
     if (normalized === "verb") {
-      // Infinitives: no person (infinitive construct/absolute)
-      if (tense === "infinitive") {
-        if (field === "person") return false;
-        // Infinitives typically don't have gender/number either
-        if (field === "gender" || field === "number") return false;
+      // Infinitives: no person, gender, or number
+      if (tense === "infinitive absolute" || tense === "infinitive construct") {
+        if (field === "person" || field === "gender" || field === "number") return false;
       }
-      // Participles: have gender and number, may have person in some forms
-      if (tense === "participle") {
-        // Participles inflect like adjectives
+      // Participles: have gender and number, but no person
+      if (tense === "participle active" || tense === "participle passive") {
         if (field === "person") return false;
       }
     }
