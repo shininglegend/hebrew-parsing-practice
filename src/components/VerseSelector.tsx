@@ -1,4 +1,4 @@
-import { NT_BOOKS } from "../utils";
+import { OT_BOOKS } from "../utils";
 import type { Word } from "../types";
 
 interface VerseSelectorProps {
@@ -50,7 +50,7 @@ export function VerseSelector({
           value={selectedBook}
           onChange={e => onBookChange(e.target.value)}
         >
-          {NT_BOOKS.map(b => (
+          {OT_BOOKS.map(b => (
             <option key={b.abbrev} value={b.abbrev}>{b.name}</option>
           ))}
         </select>
@@ -116,9 +116,12 @@ export function VerseSelector({
               </button>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 text-xl leading-relaxed">
+          <div className="flex flex-wrap items-center text-xl leading-relaxed" dir="rtl">
             {words.map((w) => {
               const isSelected = selectedWordIds.has(w.id);
+              // In RTL, we want space on the RIGHT side (which is "before" in reading order)
+              // This is achieved with margin-inline-start in RTL context
+              const needsSpace = w.afterSpace !== false;
               return (
                 <button
                   key={w.id}
@@ -128,6 +131,7 @@ export function VerseSelector({
                       ? "bg-blue-100 border-blue-500 text-blue-900 font-semibold" 
                       : "bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100"
                   }`}
+                  style={{ marginInlineStart: needsSpace ? '0.75rem' : '0' }}
                   title={`${w.surface} (${w.lemma || "unknown"})`}
                 >
                   {w.surface}
@@ -142,7 +146,7 @@ export function VerseSelector({
       )}
       
       {!hideVerse && !showWordSelection && (
-        <div className="text-base text-slate-700">
+        <div className="text-base text-slate-700" dir="rtl">
           <span className="font-mono text-lg">{surfaceLine}</span>
         </div>
       )}

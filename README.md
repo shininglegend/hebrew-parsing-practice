@@ -1,6 +1,6 @@
 # Hebrew Parsing Practice
 
-An educational web application for practicing Biblical Greek morphological parsing. Load Bible verses, parse each word by selecting its grammatical properties, and receive immediate feedback on your accuracy.
+An educational web application for practicing Biblical Hebrew morphological parsing. Load Bible verses, parse each word by selecting its grammatical properties, and receive immediate feedback on your accuracy.
 
 ## Features
 

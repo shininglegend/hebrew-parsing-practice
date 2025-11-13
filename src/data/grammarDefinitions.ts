@@ -5,91 +5,85 @@ export const GRAMMAR_DEFINITIONS = {
       {
         term: "Noun",
         definition:
-          "A word that names a person, place, thing, or idea. In Koine Greek, nouns are inflected for case, number, and gender.",
-        example: "ἄνθρωπος (anthrōpos) - man, human",
+          "A word that names a person, place, thing, or idea. In Biblical Hebrew, nouns are inflected for state, number, and gender.",
+        example: "אָדָם (adam) - man, human; מֶלֶךְ (melekh) - king",
       },
       {
         term: "Verb",
         definition:
-          "A word that expresses action or state of being. Greek verbs are inflected for tense, voice, mood, person, and number.",
-        example: "λέγω (legō) - I say, I speak",
+          "A word that expresses action or state of being. Hebrew verbs are inflected for stem (binyan), tense/aspect, person, gender, and number.",
+        example: "כָּתַב (katav) - he wrote; יִכְתֹּב (yikhtov) - he will write",
       },
       {
         term: "Adjective",
         definition:
-          "A word that modifies or describes a noun. Adjectives agree with the nouns they modify in case, number, and gender.",
-        example: "ἀγαθός (agathos) - good",
+          "A word that modifies or describes a noun. Hebrew adjectives agree with the nouns they modify in state, number, and gender.",
+        example: "טוֹב (tov) - good; גָּדוֹל (gadol) - great",
       },
       {
         term: "Adverb",
         definition:
-          "A word that modifies a verb, adjective, or another adverb. Adverbs are typically invariable.",
-        example: "καλῶς (kalōs) - well, rightly",
+          "A word that modifies a verb, adjective, or another adverb. Hebrew adverbs are typically invariable.",
+        example: "מְאֹד (meod) - very, much",
       },
       {
         term: "Preposition",
         definition:
-          "A word that shows the relationship between a noun (or pronoun) and other words in a sentence. Greek prepositions govern specific cases.",
-        example: "ἐν (en) - in, by (+ dative)",
+          "A word that shows the relationship between a noun (or pronoun) and other words in a sentence. Many Hebrew prepositions are prefixed directly to words.",
+        example: "בְּ (be-) - in, with; לְ (le-) - to, for; מִן (min) - from",
       },
       {
         term: "Pronoun",
         definition:
-          "A word that takes the place of a noun. Pronouns are inflected for case, number, gender, and sometimes person.",
-        example: "αὐτός (autos) - he, she, it",
+          "A word that takes the place of a noun. Hebrew pronouns can be independent, suffixed, or demonstrative.",
+        example: "אֲנִי (ani) - I; הוּא (hu) - he; זֶה (zeh) - this",
       },
       {
         term: "Conjunction",
         definition:
-          "A word that connects words, phrases, or clauses. Conjunctions are invariable.",
-        example: "καί (kai) - and, also, even",
+          "A word that connects words, phrases, or clauses. The most common is the prefix vav (וְ).",
+        example: "וְ (ve-) - and; כִּי (ki) - because, that, for",
       },
       {
         term: "Particle",
         definition:
-          "A small, indeclinable word that adds nuance or emphasis to a sentence.",
-        example: "ἄν (an) - a particle indicating contingency",
+          "A small word that adds nuance, emphasis, or grammatical function to a sentence.",
+        example: "אֶת (et) - direct object marker; הֲ (ha-) - interrogative particle",
       },
       {
         term: "Article",
         definition:
-          "The definite article 'the' in Greek. It is inflected for case, number, and gender.",
-        example: "ὁ, ἡ, τό (ho, hē, to) - the",
+          "The definite article in Hebrew, always prefixed as ה (ha-). There is no indefinite article.",
+        example: "הַמֶּלֶךְ (ha-melekh) - the king",
+      },
+      {
+        term: "Interjection",
+        definition:
+          "An exclamatory word expressing emotion or calling attention.",
+        example: "הִנֵּה (hinneh) - behold!; אוֹי (oy) - woe!",
       },
     ],
   },
-  case: {
-    title: "Cases",
+  state: {
+    title: "Noun States",
     items: [
       {
-        term: "Nominative",
+        term: "Absolute",
         definition:
-          "The case of the subject of a sentence or the predicate nominative. Answers 'who?' or 'what?' is doing the action.",
-        example: "ὁ ἄνθρωπος λέγει - The man speaks (ἄνθρωπος is nominative)",
+          "The basic, standalone form of a noun. Used when the noun is not in a construct relationship or definiteness.",
+        example: "מֶלֶךְ (melekh) - a king",
       },
       {
-        term: "Genitive",
+        term: "Construct",
         definition:
-          "The case of possession, origin, or description. Often translated with 'of' or with a possessive ('s).",
-        example: "ὁ λόγος τοῦ θεοῦ - The word of God (θεοῦ is genitive)",
+          "A shortened form used in a bound relationship with another noun, showing possession, relationship, or specification. Often translated with 'of'.",
+        example: "מֶלֶךְ יִשְׂרָאֵל (melekh yisrael) - king of Israel",
       },
       {
-        term: "Dative",
+        term: "Determined",
         definition:
-          "The case of the indirect object, means, location, or personal interest. Often translated with 'to,' 'for,' 'by,' or 'with.'",
-        example: "λέγει τῷ ἀνθρώπῳ - He speaks to the man (ἀνθρώπῳ is dative)",
-      },
-      {
-        term: "Accusative",
-        definition:
-          "The case of the direct object or extent. Answers 'whom?' or 'what?' receives the action.",
-        example: "βλέπω τὸν ἄνθρωπον - I see the man (ἄνθρωπον is accusative)",
-      },
-      {
-        term: "Vocative",
-        definition:
-          "The case of direct address. Used when speaking directly to someone or something.",
-        example: "κύριε, σῶσον ἡμᾶς - Lord, save us! (κύριε is vocative)",
+          "A noun made definite by the article ה (ha-), a possessive suffix, or being in construct with a determined noun.",
+        example: "הַמֶּלֶךְ (ha-melekh) - the king",
       },
     ],
   },
@@ -99,12 +93,17 @@ export const GRAMMAR_DEFINITIONS = {
       {
         term: "Singular",
         definition: "Refers to one person or thing.",
-        example: "ὁ μαθητής - the disciple (one)",
+        example: "מֶלֶךְ (melekh) - a king (one)",
       },
       {
         term: "Plural",
         definition: "Refers to more than one person or thing.",
-        example: "οἱ μαθηταί - the disciples (more than one)",
+        example: "מְלָכִים (melakhim) - kings (more than one)",
+      },
+      {
+        term: "Dual",
+        definition: "Refers to two of something, especially paired body parts and measures of time.",
+        example: "יָדַיִם (yadayim) - two hands; יוֹמַיִם (yomayim) - two days",
       },
     ],
   },
@@ -114,128 +113,102 @@ export const GRAMMAR_DEFINITIONS = {
       {
         term: "Masculine",
         definition:
-          "Grammatical gender typically (but not always) used for male persons and certain nouns.",
-        example: "ὁ ἄνθρωπος - the man (masculine)",
+          "Grammatical gender typically (but not always) used for male persons and certain nouns. Most Hebrew nouns are masculine.",
+        example: "אָב (av) - father; יוֹם (yom) - day",
       },
       {
         term: "Feminine",
         definition:
-          "Grammatical gender typically (but not always) used for female persons and certain nouns.",
-        example: "ἡ γυνή - the woman (feminine)",
+          "Grammatical gender typically (but not always) used for female persons and certain nouns. Often (but not always) ends in ה- or ת-.",
+        example: "אֵם (em) - mother; תּוֹרָה (torah) - law, instruction",
       },
       {
-        term: "Neuter",
+        term: "Common",
         definition:
-          "Grammatical gender for things and certain abstract concepts. Neither masculine nor feminine.",
-        example: "τὸ τέκνον - the child (neuter)",
+          "A gender that can be either masculine or feminine, typically used for certain pronouns and numbers.",
+        example: "אַתָּה/אַתְּ (atah/at) - you (m/f); שְׁנַיִם (shnayim) - two",
+      },
+    ],
+  },
+  stem: {
+    title: "Verb Stems (Binyanim)",
+    items: [
+      {
+        term: "Qal",
+        definition:
+          "The simple, active stem. The basic, unmarked form of the verb expressing simple action.",
+        example: "כָּתַב (katav) - he wrote; שָׁמַר (shamar) - he kept/guarded",
+      },
+      {
+        term: "Niphal",
+        definition:
+          "Often passive or reflexive of Qal. Can also express middle voice or tolerative meanings.",
+        example: "נִכְתַּב (nikhtav) - it was written; נִשְׁמַר (nishmar) - he was kept/guarded",
+      },
+      {
+        term: "Piel",
+        definition:
+          "Often intensifies or makes the action causative. Can express repeated or extensive action.",
+        example: "כִּתֵּב (kittev) - he inscribed (intensive writing)",
+      },
+      {
+        term: "Pual",
+        definition:
+          "The passive of Piel. Expresses passive intensive or causative action.",
+        example: "כֻּתַּב (kuttav) - it was inscribed (passive intensive)",
+      },
+      {
+        term: "Hiphil",
+        definition:
+          "The causative stem. Expresses causing someone or something to do the action.",
+        example: "הִכְתִּיב (hikhtiv) - he caused to write, he dictated",
+      },
+      {
+        term: "Hophal",
+        definition:
+          "The passive of Hiphil. Expresses being caused to do the action.",
+        example: "הָכְתַּב (hokhtav) - it was caused to be written",
+      },
+      {
+        term: "Hithpael",
+        definition:
+          "Reflexive or reciprocal stem. Can express iterative or habitual action.",
+        example: "הִתְכַּתֵּב (hitkattev) - he corresponded (reflexive/reciprocal)",
       },
     ],
   },
   tense: {
-    title: "Tenses",
+    title: "Verb Conjugations (Tense/Aspect)",
     items: [
       {
-        term: "Present",
+        term: "Perfect",
         definition:
-          "Describes ongoing or continuous action in present time. Emphasizes the process or ongoing nature of the action.",
-        example: "λέγω - I am saying, I say",
+          "Expresses completed action, often in the past. Emphasizes the state resulting from a completed action. Sometimes called 'suffix conjugation' (qatal).",
+        example: "כָּתַב (katav) - he wrote, he has written",
       },
       {
         term: "Imperfect",
         definition:
-          "Describes ongoing or repeated action in past time. Often translated 'was doing' or 'used to do.'",
-        example: "ἔλεγον - I was saying, I kept saying",
-      },
-      {
-        term: "Future",
-        definition: "Describes action that will occur in future time.",
-        example: "ἐρῶ - I will say (irregular form)",
-      },
-      {
-        term: "Aorist",
-        definition:
-          "Describes a simple, undefined action, often in past time. Does not emphasize the process but simply that the action occurred.",
-        example: "εἶπον - I said",
-      },
-      {
-        term: "Perfect",
-        definition:
-          "Describes a completed action with continuing results in the present. The action is finished, but its effects remain.",
-        example: "εἴρηκα - I have said (and it still stands)",
-      },
-      {
-        term: "Pluperfect",
-        definition:
-          "Describes a completed action with continuing results in the past. The action was finished, and its effects remained at a past point in time.",
-        example: "εἰρήκειν - I had said",
-      },
-    ],
-  },
-  voice: {
-    title: "Voices",
-    items: [
-      {
-        term: "Active",
-        definition: "The subject performs the action of the verb.",
-        example: "λύω - I loose (I am performing the action)",
-      },
-      {
-        term: "Middle",
-        definition:
-          "The subject acts upon itself or for its own benefit. Emphasizes the subject's involvement or interest in the action.",
-        example: "λύομαι - I loose for myself, I ransom",
-      },
-      {
-        term: "Passive",
-        definition: "The subject receives the action of the verb.",
-        example: "λύομαι - I am loosed (by someone else)",
-      },
-      {
-        term: "Middle/Passive",
-        definition:
-          "Some forms in Greek are ambiguous between middle and passive meanings. Context determines which is intended.",
-        example: "λύεται - he/she/it looses (for self) OR is being loosed",
-      },
-    ],
-  },
-  mood: {
-    title: "Moods",
-    items: [
-      {
-        term: "Indicative",
-        definition:
-          "The mood of assertion or statement of fact. Used for statements and questions about reality.",
-        example: "λέγω - I say (stating a fact)",
+          "Expresses incomplete, ongoing, or future action. Can indicate habitual, repeated, or potential action. Sometimes called 'prefix conjugation' (yiqtol).",
+        example: "יִכְתֹּב (yikhtov) - he will write, he writes, he was writing",
       },
       {
         term: "Imperative",
         definition:
-          "The mood of command or entreaty. Used for direct commands, requests, or prohibitions.",
-        example: "λέγε - Say! Speak! (command)",
-      },
-      {
-        term: "Subjunctive",
-        definition:
-          "The mood of possibility, expectation, or exhortation. Often used in conditional clauses and purpose clauses.",
-        example: "λέγωμεν - let us say, we might say",
-      },
-      {
-        term: "Optative",
-        definition:
-          "The mood of wish or remote possibility. Less common in Koine Greek than in Classical Greek.",
-        example: "λέγοιμι - May I say, I would say",
+          "Expresses direct commands. Used for second person only (you/you all).",
+        example: "כְּתֹב (ketov) - write! (masculine singular)",
       },
       {
         term: "Infinitive",
         definition:
-          "A verbal noun ('to do'). Not technically a mood, but functions as one in Greek grammar.",
-        example: "λέγειν - to say, to speak",
+          "Verbal noun forms. Two types: infinitive construct (לִכְתֹּב) and infinitive absolute (כָּתוֹב). Used in various syntactic constructions.",
+        example: "לִכְתֹּב (likhtov) - to write; כָּתוֹב (katov) - writing (absolute)",
       },
       {
         term: "Participle",
         definition:
-          "A verbal adjective. Not technically a mood, but functions as one in Greek grammar. Participles can express time, cause, manner, condition, and more.",
-        example: "λέγων - saying, while saying",
+          "Verbal adjective that can function as a noun, adjective, or express ongoing action. Inflects for gender and number.",
+        example: "כֹּתֵב (kotev) - writing, one who writes (masc. sing.)",
       },
     ],
   },
@@ -245,19 +218,19 @@ export const GRAMMAR_DEFINITIONS = {
       {
         term: "First Person",
         definition: "The speaker or writer. 'I' (singular) or 'we' (plural).",
-        example: "λέγω - I say; λέγομεν - we say",
+        example: "כָּתַבְתִּי (katavti) - I wrote; כָּתַבְנוּ (katavnu) - we wrote",
       },
       {
         term: "Second Person",
         definition:
-          "The person(s) being addressed. 'You' (singular or plural).",
-        example: "λέγεις - you say; λέγετε - you (all) say",
+          "The person(s) being addressed. 'You' (masculine/feminine, singular/plural).",
+        example: "כָּתַבְתָּ (katavta) - you wrote (m.); כָּתַבְתְּ (katavt) - you wrote (f.)",
       },
       {
         term: "Third Person",
         definition:
           "The person(s) or thing(s) being spoken about. 'He/she/it' (singular) or 'they' (plural).",
-        example: "λέγει - he/she/it says; λέγουσι - they say",
+        example: "כָּתַב (katav) - he wrote; כָּתְבָה (katva) - she wrote",
       },
     ],
   },

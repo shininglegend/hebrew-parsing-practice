@@ -13,7 +13,7 @@ export function Help() {
           <p>
             Select a Bible verse using the book, chapter, and verse dropdowns,
             then click <strong>Load Verse</strong>. The verse will appear in
-            Greek with each word ready for parsing practice.
+            Hebrew with each word ready for parsing practice.
           </p>
         </section>
 
@@ -22,9 +22,9 @@ export function Help() {
             Parser Drill Mode
           </h4>
           <p>
-            For each Greek word, expand the section using the + icon, then
+            For each Hebrew word, expand the section using the + icon, then
             select the correct grammatical features from the dropdown menus
-            (part of speech, case, number, etc.). Your selections are checked in
+            (part of speech, state, gender, number, stem, etc.). Your selections are checked in
             real-time—correct answers show green borders, incorrect ones remain
             white. Toggle words on/off using the checkboxes in the verse display
             to focus on specific words. Your score appears below showing how
@@ -37,9 +37,9 @@ export function Help() {
             Reverse Parser Mode
           </h4>
           <p>
-            Given the grammatical information and lemma, type the correct Greek
+            Given the grammatical information and Strong's number, type the correct Hebrew
             surface form into the input box. You can toggle options to ignore
-            accents, breathing marks, or case sensitivity. Correct answers show
+            vowel points (nikud), cantillation marks (te'amim), or case sensitivity. Correct answers show
             with green borders. Click <strong>Reveal Answers</strong> to see all
             correct forms.
           </p>
@@ -51,9 +51,9 @@ export function Help() {
           </h4>
           <p>
             Use the <strong>Morphology Charts</strong> button to view noun
-            declension and verb conjugation paradigms. The{" "}
+            patterns and verb conjugation paradigms. The{" "}
             <strong>Grammar Guide</strong> button provides definitions and
-            examples for all grammatical terms used in parsing.
+            examples for all grammatical terms used in parsing Hebrew.
           </p>
         </section>
       </div>

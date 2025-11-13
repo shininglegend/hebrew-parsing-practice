@@ -1,190 +1,184 @@
 export const MORPHOLOGY_CHARTS = {
   article: {
-    title: "Article (ὁ, ἡ, τό - 'the')",
+    title: "Definite Article (ה - 'the')",
     tables: [
       {
-        subtitle: "Singular",
-        headers: ["Case", "Masc.", "Fem.", "Neut."],
+        subtitle: "With various noun patterns",
+        headers: ["Pattern", "Masculine", "Feminine"],
         rows: [
-          ["Nom.", "ὁ", "ἡ", "τό"],
-          ["Gen.", "τοῦ", "τῆς", "τοῦ"],
-          ["Dat.", "τῷ", "τῇ", "τῷ"],
-          ["Acc.", "τόν", "τήν", "τό"],
-        ],
-      },
-      {
-        subtitle: "Plural",
-        headers: ["Case", "Masc.", "Fem.", "Neut."],
-        rows: [
-          ["Nom.", "οἱ", "αἱ", "τά"],
-          ["Gen.", "τῶν", "τῶν", "τῶν"],
-          ["Dat.", "τοῖς", "ταῖς", "τοῖς"],
-          ["Acc.", "τούς", "τάς", "τά"],
+          ["Before regular cons.", "הַמֶּלֶךְ (the king)", "הַמַּלְכָּה (the queen)"],
+          ["Before gutturals", "הָאָב (the father)", "הָאֵם (the mother)"],
+          ["Before ר", "הָרֹאשׁ (the head)", "הָרוּחַ (the wind)"],
         ],
       },
     ],
   },
-  firstDeclension: {
-    title: "First Declension Nouns (mostly Fem.)",
+  masculineNoun: {
+    title: "Masculine Nouns",
     tables: [
       {
-        subtitle: "ἡ γλῶσσα (tongue) - α-stem after ρ, ε, ι",
-        headers: ["Case", "Singular", "Plural"],
+        subtitle: "סוּס (horse) - Regular pattern",
+        headers: ["State", "Singular", "Plural"],
         rows: [
-          ["Nom.", "γλῶσσα", "γλῶσσαι"],
-          ["Gen.", "γλώσσης", "γλωσσῶν"],
-          ["Dat.", "γλώσσῃ", "γλώσσαις"],
-          ["Acc.", "γλῶσσαν", "γλώσσας"],
-          ["Voc.", "γλῶσσα", "γλῶσσαι"],
+          ["Absolute", "סוּס", "סוּסִים"],
+          ["Construct", "סוּס", "סוּסֵי"],
+          ["Determined", "הַסּוּס", "הַסּוּסִים"],
         ],
       },
       {
-        subtitle: "ἡ γλῶσσα (tongue) - η-stem after ρ, ε, ι",
-        headers: ["Case", "Singular", "Plural"],
+        subtitle: "מֶלֶךְ (king) - Segolate pattern",
+        headers: ["State", "Singular", "Plural"],
         rows: [
-          ["Nom.", "γλῶσσα", "γλῶσσαι"],
-          ["Gen.", "γλώσσης", "γλωσσῶν"],
-          ["Dat.", "γλώσσῃ", "γλώσσαις"],
-          ["Acc.", "γλῶσσαν", "γλώσσας"],
-          ["Voc.", "γλῶσσα", "γλῶσσαι"],
+          ["Absolute", "מֶלֶךְ", "מְלָכִים"],
+          ["Construct", "מֶלֶךְ", "מַלְכֵי"],
+          ["Determined", "הַמֶּלֶךְ", "הַמְּלָכִים"],
         ],
       },
     ],
   },
-  secondDeclension: {
-    title: "Second Declension Nouns",
+  feminineNoun: {
+    title: "Feminine Nouns",
     tables: [
       {
-        subtitle: "ὁ λόγος (word) - Masc.",
-        headers: ["Case", "Singular", "Plural"],
+        subtitle: "תּוֹרָה (law) - Regular ה- ending",
+        headers: ["State", "Singular", "Plural"],
         rows: [
-          ["Nom.", "λόγος", "λόγοι"],
-          ["Gen.", "λόγου", "λόγων"],
-          ["Dat.", "λόγῳ", "λόγοις"],
-          ["Acc.", "λόγον", "λόγους"],
-          ["Voc.", "λόγε", "λόγοι"],
+          ["Absolute", "תּוֹרָה", "תּוֹרוֹת"],
+          ["Construct", "תּוֹרַת", "תּוֹרוֹת"],
+          ["Determined", "הַתּוֹרָה", "הַתּוֹרוֹת"],
         ],
       },
       {
-        subtitle: "τὸ δῶρον (gift) - Neut.",
-        headers: ["Case", "Singular", "Plural"],
+        subtitle: "מַלְכָּה (queen) - Regular ה- ending",
+        headers: ["State", "Singular", "Plural"],
         rows: [
-          ["Nom.", "δῶρον", "δῶρα"],
-          ["Gen.", "δώρου", "δώρων"],
-          ["Dat.", "δώρῳ", "δώροις"],
-          ["Acc.", "δῶρον", "δῶρα"],
-          ["Voc.", "δῶρον", "δῶρα"],
+          ["Absolute", "מַלְכָּה", "מְלָכוֹת"],
+          ["Construct", "מַלְכַּת", "מַלְכוֹת"],
+          ["Determined", "הַמַּלְכָּה", "הַמְּלָכוֹת"],
         ],
       },
     ],
   },
-  thirdDeclension: {
-    title: "Third Declension Nouns",
+  dualNouns: {
+    title: "Dual Number Nouns",
     tables: [
       {
-        subtitle: "ἡ σάρξ (flesh) - Consonant stem",
-        headers: ["Case", "Singular", "Plural"],
+        subtitle: "Common dual forms (paired items)",
+        headers: ["Word", "Singular", "Dual"],
         rows: [
-          ["Nom.", "σάρξ", "σάρκες"],
-          ["Gen.", "σαρκός", "σαρκῶν"],
-          ["Dat.", "σαρκί", "σαρξί(ν)"],
-          ["Acc.", "σάρκα", "σάρκας"],
-          ["Voc.", "σάρξ", "σάρκες"],
-        ],
-      },
-      {
-        subtitle: "ἡ πόλις (city) - Vowel stem",
-        headers: ["Case", "Singular", "Plural"],
-        rows: [
-          ["Nom.", "πόλις", "πόλεις"],
-          ["Gen.", "πόλεως", "πόλεων"],
-          ["Dat.", "πόλει", "πόλεσι(ν)"],
-          ["Acc.", "πόλιν", "πόλεις"],
-          ["Voc.", "πόλι", "πόλεις"],
+          ["Hand", "יָד", "יָדַיִם"],
+          ["Eye", "עַיִן", "עֵינַיִם"],
+          ["Foot", "רֶגֶל", "רַגְלַיִם"],
+          ["Day (two)", "יוֹם", "יוֹמַיִם"],
         ],
       },
     ],
   },
-  presentActive: {
-    title: "Present Active Indicative (λύω - I loose)",
+  qalPerfect: {
+    title: "Qal Perfect (כָּתַב - he wrote)",
     tables: [
       {
         subtitle: "Singular & Plural",
         headers: ["Person", "Singular", "Plural"],
         rows: [
-          ["1st", "λύομαι", "λυόμεθα"],
-          ["2nd", "λύῃ", "λύεσθε"],
-          ["3rd", "λύεται", "λύονται"],
+          ["3rd m.", "כָּתַב", "כָּתְבוּ"],
+          ["3rd f.", "כָּתְבָה", "כָּתְבוּ"],
+          ["2nd m.", "כָּתַבְתָּ", "כְּתַבְתֶּם"],
+          ["2nd f.", "כָּתַבְתְּ", "כְּתַבְתֶּן"],
+          ["1st c.", "כָּתַבְתִּי", "כָּתַבְנוּ"],
         ],
       },
     ],
   },
-  imperfectActive: {
-    title: "Imperfect Active Indicative (ἔλυον - I was loosing)",
+  qalImperfect: {
+    title: "Qal Imperfect (יִכְתֹּב - he will write)",
     tables: [
       {
         subtitle: "Singular & Plural",
         headers: ["Person", "Singular", "Plural"],
         rows: [
-          ["1st", "ἔλυον", "ἐλύομεν"],
-          ["2nd", "ἔλυες", "ἐλύετε"],
-          ["3rd", "ἔλυε(ν)", "ἔλυον"],
+          ["3rd m.", "יִכְתֹּב", "יִכְתְּבוּ"],
+          ["3rd f.", "תִּכְתֹּב", "תִּכְתֹּבְנָה"],
+          ["2nd m.", "תִּכְתֹּב", "תִּכְתְּבוּ"],
+          ["2nd f.", "תִּכְתְּבִי", "תִּכְתֹּבְנָה"],
+          ["1st c.", "אֶכְתֹּב", "נִכְתֹּב"],
         ],
       },
     ],
   },
-  futureActive: {
-    title: "Future Active Indicative (λύσω - I will loose)",
+  qalImperative: {
+    title: "Qal Imperative (כְּתֹב - write!)",
+    tables: [
+      {
+        subtitle: "Second person only",
+        headers: ["Person", "Singular", "Plural"],
+        rows: [
+          ["2nd m.", "כְּתֹב", "כִּתְבוּ"],
+          ["2nd f.", "כִּתְבִי", "כְּתֹבְנָה"],
+        ],
+      },
+    ],
+  },
+  niphalPerfect: {
+    title: "Niphal Perfect (נִכְתַּב - it was written)",
     tables: [
       {
         subtitle: "Singular & Plural",
         headers: ["Person", "Singular", "Plural"],
         rows: [
-          ["1st", "λύσω", "λύσομεν"],
-          ["2nd", "λύσεις", "λύσετε"],
-          ["3rd", "λύσει", "λύσουσι(ν)"],
+          ["3rd m.", "נִכְתַּב", "נִכְתְּבוּ"],
+          ["3rd f.", "נִכְתְּבָה", "נִכְתְּבוּ"],
+          ["2nd m.", "נִכְתַּבְתָּ", "נִכְתַּבְתֶּם"],
+          ["2nd f.", "נִכְתַּבְתְּ", "נִכְתַּבְתֶּן"],
+          ["1st c.", "נִכְתַּבְתִּי", "נִכְתַּבְנוּ"],
         ],
       },
     ],
   },
-  aoristActive: {
-    title: "Aorist Active Indicative (ἔλυσα - I loosed)",
+  pielPerfect: {
+    title: "Piel Perfect (כִּתֵּב - he inscribed)",
     tables: [
       {
         subtitle: "Singular & Plural",
         headers: ["Person", "Singular", "Plural"],
         rows: [
-          ["1st", "ἔλυσα", "ἐλύσαμεν"],
-          ["2nd", "ἔλυσας", "ἐλύσατε"],
-          ["3rd", "ἔλυσε(ν)", "ἔλυσαν"],
+          ["3rd m.", "כִּתֵּב", "כִּתְּבוּ"],
+          ["3rd f.", "כִּתְּבָה", "כִּתְּבוּ"],
+          ["2nd m.", "כִּתַּבְתָּ", "כִּתַּבְתֶּם"],
+          ["2nd f.", "כִּתַּבְתְּ", "כִּתַּבְתֶּן"],
+          ["1st c.", "כִּתַּבְתִּי", "כִּתַּבְנוּ"],
         ],
       },
     ],
   },
-  perfectActive: {
-    title: "Perfect Active Indicative (λέλυκα - I have loosed)",
+  hiphilPerfect: {
+    title: "Hiphil Perfect (הִכְתִּיב - he caused to write)",
     tables: [
       {
         subtitle: "Singular & Plural",
         headers: ["Person", "Singular", "Plural"],
         rows: [
-          ["1st", "λέλυκα", "λελύκαμεν"],
-          ["2nd", "λέλυκας", "λελύκατε"],
-          ["3rd", "λέλυκε(ν)", "λελύκασι(ν)"],
+          ["3rd m.", "הִכְתִּיב", "הִכְתִּיבוּ"],
+          ["3rd f.", "הִכְתִּיבָה", "הִכְתִּיבוּ"],
+          ["2nd m.", "הִכְתַּבְתָּ", "הִכְתַּבְתֶּם"],
+          ["2nd f.", "הִכְתַּבְתְּ", "הִכְתַּבְתֶּן"],
+          ["1st c.", "הִכְתַּבְתִּי", "הִכְתַּבְנוּ"],
         ],
       },
     ],
   },
-  middlePassive: {
-    title: "Present Middle/Passive Indicative (λύομαι)",
+  pronouns: {
+    title: "Independent Personal Pronouns",
     tables: [
       {
         subtitle: "Singular & Plural",
         headers: ["Person", "Singular", "Plural"],
         rows: [
-          ["1st", "λύομαι", "λυόμεθα"],
-          ["2nd", "λύῃ/λύει", "λύεσθε"],
-          ["3rd", "λύεται", "λύονται"],
+          ["3rd m.", "הוּא (he)", "הֵם/הֵמָּה (they)"],
+          ["3rd f.", "הִיא (she)", "הֵן/הֵנָּה (they)"],
+          ["2nd m.", "אַתָּה (you)", "אַתֶּם (you)"],
+          ["2nd f.", "אַתְּ (you)", "אַתֶּן (you)"],
+          ["1st c.", "אֲנִי/אָנֹכִי (I)", "אֲנַחְנוּ (we)"],
         ],
       },
     ],

@@ -81,13 +81,12 @@ export function WordCard({ w, answer, onChange, disabled }: WordCardProps) {
             // Build a ParseFields object from the current answer for context
             const currentParse: ParseFields = {
               pos: answer?.pos,
-              case: answer?.case,
-              number: answer?.number,
+              state: answer?.state,
               gender: answer?.gender,
-              tense: answer?.tense,
-              voice: answer?.voice,
-              mood: answer?.mood,
+              number: answer?.number,
               person: answer?.person,
+              stem: answer?.stem,
+              tense: answer?.tense,
             };
             const relevant = isFieldRelevant(selectedPos, f.key, currentParse);
             

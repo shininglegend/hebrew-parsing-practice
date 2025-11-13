@@ -333,7 +333,7 @@ export function ReverseParser() {
 
           <div className="text-xs text-slate-500">
             <p>
-              <strong>How to use:</strong> Type the Greek word in each box. When
+              <strong>How to use:</strong> Type the Hebrew word in each box. When
               correct, the box will turn green. Use the morphological details
               below each box to help you construct the correct form from the
               lemma.

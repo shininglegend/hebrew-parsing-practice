@@ -12,7 +12,7 @@ export function Footer() {
         requests, submit an issue by clicking{" "}
         <a
           className="text-blue-500 font-bold"
-          href="https://github.com/shininglegend/greek-parsing-practice/issues"
+          href="https://github.com/shininglegend/hebrew-parsing-practice/issues"
         >
           here.
         </a>

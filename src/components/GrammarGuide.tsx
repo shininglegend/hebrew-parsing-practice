@@ -6,12 +6,11 @@ export function GrammarGuide() {
 
   const sections = [
     { key: "partOfSpeech", label: "Parts of Speech" },
-    { key: "case", label: "Cases" },
+    { key: "state", label: "Noun States" },
     { key: "number", label: "Number" },
     { key: "gender", label: "Gender" },
-    { key: "tense", label: "Tenses" },
-    { key: "voice", label: "Voices" },
-    { key: "mood", label: "Moods" },
+    { key: "stem", label: "Verb Stems" },
+    { key: "tense", label: "Verb Conjugations" },
     { key: "person", label: "Person" }
   ];
 
