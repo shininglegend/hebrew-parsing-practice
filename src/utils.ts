@@ -2,13 +2,17 @@ import confetti from "canvas-confetti";
 import type { FieldSpec, ParseFields } from "./types";
 
 export const FIELD_SPECS: FieldSpec[] = [
-  { key: "pos",    label: "Part of Speech", options: ["noun","noun (common)","noun (proper)","noun (gentilic)","verb","adjective","numeral","preposition","pronoun","conjunction","particle","adverb","interjection","—"] },
+  { key: "pos",    label: "Part of Speech", options: ["noun (common)","noun (proper)","noun (gentilic)","verb","adjective","numeral","preposition","pronoun","conjunction","particle","adverb","interjection","—"] },
   { key: "state",  label: "State",          options: ["absolute","construct","determined","—"] },
   { key: "gender", label: "Gender",         options: ["masculine","feminine","common","—"] },
   { key: "number", label: "Number",         options: ["singular","plural","dual","—"] },
   { key: "person", label: "Person",         options: ["first","second","third","—"] },
-  { key: "stem",   label: "Stem/Binyan",    options: ["qal","qal passive","niphal","piel","pual","hiphil","hophal","hithpael","polel","polal","poel","poal","pilpel","hithpalpel","nithpael","—"] },
+  { key: "stem",   label: "Stem/Binyan",    options: ["qal","qal passive","niphal","piel","pual","hiphil","hophal","hithpael","polel","hithpolel","poel","pilpel","other (rare)","—"] },
   { key: "tense",  label: "Tense/Aspect",   options: ["perfect (qatal)","imperfect (yiqtol)","sequential perfect","sequential imperfect","cohortative","jussive","imperative","infinitive absolute","infinitive construct","participle active","participle passive","—"] },
+  { key: "suffix", label: "Suffix",         options: ["pronominal suffix","directional he","paragogic he","paragogic nun","—"] },
+  { key: "suffixPerson", label: "Suffix Person", options: ["first","second","third","—"] },
+  { key: "suffixGender", label: "Suffix Gender", options: ["masculine","feminine","common","—"] },
+  { key: "suffixNumber", label: "Suffix Number", options: ["singular","plural","dual","—"] },
 ];
 
 // Map short forms to long forms (for display/comparison)
@@ -139,7 +143,6 @@ export function formatRef(book: string, chapter: string, verse: string): string 
 type FieldKey = keyof ParseFields;
 
 export const RELEVANT_FIELDS: Record<string, FieldKey[]> = {
-  "noun": ["state", "gender", "number"],
   "noun (common)": ["state", "gender", "number"],
   "noun (proper)": ["state", "gender", "number"],
   "noun (gentilic)": ["state", "gender", "number"],
@@ -162,6 +165,23 @@ export function isFieldRelevant(
   if (!pos) return true; // Show all fields if no POS selected
   const normalized = normalizeMissing(pos);
   if (!normalized) return true;
+  
+  // Handle suffix fields separately
+  if (field === 'suffix' || field === 'suffixPerson' || field === 'suffixGender' || field === 'suffixNumber') {
+    // Only show suffix fields if there's a suffix present
+    if (!parseFields?.suffix) return false;
+    
+    // Show suffix type always if suffix exists
+    if (field === 'suffix') return true;
+    
+    // Only show person/gender/number for pronominal suffixes
+    if (parseFields.suffix === 'pronominal suffix') {
+      return field === 'suffixPerson' || field === 'suffixGender' || field === 'suffixNumber';
+    }
+    
+    // Other suffix types don't have person/gender/number
+    return false;
+  }
   
   // Get base relevant fields for this POS
   const relevantFields = RELEVANT_FIELDS[normalized];

@@ -61,7 +61,6 @@ function decodeHebrewMorphology(code: string): Partial<ParseFields> {
   
   // Handle suffix codes (S + type + person/gender/number)
   if (firstChar === 'S') {
-    fields.suffix = 'pronominal suffix';
     if (code.length >= 2) {
       const suffixType = code[1];
       if (suffixType === 'p') {
@@ -85,6 +84,12 @@ function decodeHebrewMorphology(code: string): Partial<ParseFields> {
             else if (number === 'd') fields.suffixNumber = 'dual';
           }
         }
+      } else if (suffixType === 'd') {
+        fields.suffix = 'directional he';
+      } else if (suffixType === 'h') {
+        fields.suffix = 'paragogic he';
+      } else if (suffixType === 'n') {
+        fields.suffix = 'paragogic nun';
       }
     }
     return fields;
@@ -98,9 +103,9 @@ function decodeHebrewMorphology(code: string): Partial<ParseFields> {
         if (nounType === 'c') fields.pos = 'noun (common)';
         else if (nounType === 'p') fields.pos = 'noun (proper)';
         else if (nounType === 'g') fields.pos = 'noun (gentilic)';
-        else fields.pos = 'noun';
+        else fields.pos = 'noun (common)'; // Default to common if subtype unclear
       } else {
-        fields.pos = 'noun';
+        fields.pos = 'noun (common)'; // Default to common if no subtype specified
       }
       
       if (code.length >= 5) {
@@ -128,6 +133,7 @@ function decodeHebrewMorphology(code: string): Partial<ParseFields> {
       fields.pos = 'verb';
       if (code.length >= 2) {
         // Position 1: stem/binyan
+        // Common stems kept, rare stems (<10 occurrences) mapped to "other (rare)"
         const stem = code[1];
         if (stem === 'q') fields.stem = 'qal';
         else if (stem === 'N' || stem === 'n') fields.stem = 'niphal';
@@ -137,25 +143,14 @@ function decodeHebrewMorphology(code: string): Partial<ParseFields> {
         else if (stem === 'H') fields.stem = 'hophal';
         else if (stem === 't') fields.stem = 'hithpael';
         else if (stem === 'o') fields.stem = 'polel';
-        else if (stem === 'O') fields.stem = 'polal';
         else if (stem === 'r') fields.stem = 'hithpolel';
         else if (stem === 'm') fields.stem = 'poel';
-        else if (stem === 'M') fields.stem = 'poal';
-        else if (stem === 'k') fields.stem = 'palel';
-        else if (stem === 'K') fields.stem = 'pulal';
         else if (stem === 'Q') fields.stem = 'qal passive';
         else if (stem === 'l') fields.stem = 'pilpel';
-        else if (stem === 'L') fields.stem = 'polpal';
-        else if (stem === 'f') fields.stem = 'hithpalpel';
-        else if (stem === 'D') fields.stem = 'nithpael';
-        else if (stem === 'j') fields.stem = 'pealal';
-        else if (stem === 'i') fields.stem = 'pilel';
-        else if (stem === 'u') fields.stem = 'hothpaal';
-        else if (stem === 'c') fields.stem = 'tiphil';
-        else if (stem === 'v') fields.stem = 'hishtaphel';
-        else if (stem === 'w') fields.stem = 'nithpalel';
-        else if (stem === 'y') fields.stem = 'nithpoel';
-        else if (stem === 'z') fields.stem = 'hithpoel';
+        // Rare stems (< 10 occurrences in sample): O, K, D, u, k, M, j, L, z, f, i, c, v, w, y
+        else if (['O', 'K', 'D', 'u', 'k', 'M', 'j', 'L', 'z', 'f', 'i', 'c', 'v', 'w', 'y'].includes(stem)) {
+          fields.stem = 'other (rare)';
+        }
       }
       if (code.length >= 3) {
         // Position 2: tense/conjugation
@@ -365,30 +360,32 @@ function parseVerseRef(ref: string): [string, number, number] | null {
 // GitHub repository URL for Hebrew data files
 const GITHUB_DATA_BASE_URL = 'https://raw.githubusercontent.com/shininglegend/hebrew-parsing-practice/refs/heads/main/hebrew-data/bible-books';
 
-// Cache for loaded book data to avoid repeated fetches
-const bookCache: Record<string, unknown> = {};
+// Cache for loaded chapter data to avoid repeated fetches
+const chapterCache: Record<string, unknown> = {};
 
 /**
- * Load a book's data from GitHub (with caching)
+ * Load a chapter's data from GitHub (with caching)
  */
-async function loadBookData(bookFile: string): Promise<unknown> {
+async function loadChapterData(bookFile: string, chapterNum: number): Promise<unknown> {
+  const cacheKey = `${bookFile}-${chapterNum}`;
+  
   // Check cache first
-  if (bookCache[bookFile]) {
-    return bookCache[bookFile];
+  if (chapterCache[cacheKey]) {
+    return chapterCache[cacheKey];
   }
   
   // Fetch from GitHub
-  const url = `${GITHUB_DATA_BASE_URL}/${bookFile}.json`;
+  const url = `${GITHUB_DATA_BASE_URL}/${bookFile}/chapter_${chapterNum}.json`;
   const response = await fetch(url);
   
   if (!response.ok) {
-    throw new Error(`Failed to fetch ${bookFile} from GitHub: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch ${bookFile} chapter ${chapterNum} from GitHub: ${response.status} ${response.statusText}`);
   }
   
   const data = await response.json();
   
   // Cache the data
-  bookCache[bookFile] = data;
+  chapterCache[cacheKey] = data;
   
   return data;
 }
@@ -405,21 +402,17 @@ export async function loadVerse(ref: string): Promise<Verse> {
   }
   
   const [bookFile, chapterIdx, verseIdx] = parsed;
+  const chapterNum = chapterIdx + 1; // Convert from 0-indexed to 1-indexed for filename
   
   try {
-    // Load the book data from GitHub
-    const bookData = await loadBookData(bookFile);
+    // Load the chapter data from GitHub
+    const chapterData = await loadChapterData(bookFile, chapterNum);
     
-    const chapters = bookData as unknown[];
+    const verses = chapterData as unknown[];
     
-    // Validate indices
-    if (!Array.isArray(chapters) || chapterIdx >= chapters.length) {
-      throw new Error(`Chapter ${chapterIdx + 1} not found in ${bookFile}`);
-    }
-    
-    const verses = chapters[chapterIdx];
+    // Validate verse index
     if (!Array.isArray(verses) || verseIdx >= verses.length) {
-      throw new Error(`Verse ${verseIdx + 1} not found in chapter ${chapterIdx + 1} of ${bookFile}`);
+      throw new Error(`Verse ${verseIdx + 1} not found in ${bookFile} chapter ${chapterNum}`);
     }
     
     const verseData = verses[verseIdx];
@@ -437,34 +430,34 @@ export async function loadVerse(ref: string): Promise<Verse> {
       const [surface, strongs, morphCode] = wordData;
       
       // Check if this is a compound word (prefix/suffix attached with /)
-      const surfaceParts = surface.split('/');
-      const strongsParts = strongs.split('/');
       const morphParts = morphCode.split('/');
       
-      // If there are multiple parts, create separate Word entries for each
-      if (surfaceParts.length > 1 && morphParts.length > 1) {
-        surfaceParts.forEach((surf, partIdx) => {
-          const partStrongs = strongsParts[partIdx] || strongsParts[strongsParts.length - 1];
-          const partMorph = morphParts[partIdx] || morphParts[morphParts.length - 1];
+      // Decode all morphology parts and merge them
+      const parsedFields: Partial<ParseFields> = {};
+      
+      for (const part of morphParts) {
+        if (part && part.length > 0) {
+          const decoded = decodeHebrewMorphology(part);
           
-          words.push({
-            surface: surf,
-            lemma: partStrongs,
-            parse: decodeHebrewMorphology(partMorph),
-            id: `${bookFile}-${chapterIdx + 1}-${verseIdx + 1}-${wordIdx}-${partIdx}`,
-            afterSpace: partIdx === 0 // Only first part gets space before it
-          });
-        });
-      } else {
-        // Single word, no compounds
-        words.push({
-          surface,
-          lemma: strongs,
-          parse: decodeHebrewMorphology(morphCode),
-          id: `${bookFile}-${chapterIdx + 1}-${verseIdx + 1}-${wordIdx}`,
-          afterSpace: true // Normal spacing
-        });
+          // Skip vav conjunction prefix (Hc) - too common and invariant to be worth parsing
+          // User will see it in the surface text but won't need to parse it
+          if (decoded.prefix === 'ו (and)') {
+            continue; // Skip adding this to parsedFields
+          }
+          
+          // Merge decoded fields into parsedFields
+          Object.assign(parsedFields, decoded);
+        }
       }
+      
+      // Create a single word with combined morphology
+      words.push({
+        surface,
+        lemma: strongs,
+        parse: parsedFields,
+        id: `${bookFile}-${chapterNum}-${verseIdx + 1}-${wordIdx}`,
+        afterSpace: true
+      });
     });
     
     return {

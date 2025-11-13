@@ -75,8 +75,11 @@ export function WordCard({ w, answer, onChange, disabled }: WordCardProps) {
             const goldPos = normalizeMissing(w.parse?.pos);
             const isPosCorrect = selectedPos && goldPos && normalizeMissing(selectedPos) === goldPos;
             
-            // Hide all other fields until POS is correct
-            if (!isPosCorrect) return null;
+            // Suffix fields have different visibility rules
+            const isSuffixField = f.key === 'suffix' || f.key === 'suffixPerson' || f.key === 'suffixGender' || f.key === 'suffixNumber';
+            
+            // Hide non-suffix fields until POS is correct
+            if (!isSuffixField && !isPosCorrect) return null;
             
             // Build a ParseFields object from the current answer for context
             const currentParse: ParseFields = {
@@ -87,8 +90,15 @@ export function WordCard({ w, answer, onChange, disabled }: WordCardProps) {
               person: answer?.person,
               stem: answer?.stem,
               tense: answer?.tense,
+              suffix: answer?.suffix,
+              suffixPerson: answer?.suffixPerson,
+              suffixGender: answer?.suffixGender,
+              suffixNumber: answer?.suffixNumber,
             };
-            const relevant = isFieldRelevant(selectedPos, f.key, currentParse);
+            
+            // For suffix fields, also pass the gold parse data to check if suffix exists
+            const parseForRelevance = isSuffixField ? { ...currentParse, suffix: w.parse?.suffix } : currentParse;
+            const relevant = isFieldRelevant(selectedPos, f.key, parseForRelevance);
             
             // Don't render irrelevant fields at all
             if (!relevant) return null;
