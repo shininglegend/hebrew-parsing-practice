@@ -1,5 +1,4 @@
 import type { Verse, Word, ParseFields } from "./types";
-import { OT_BOOKS } from "./utils";
 
 // Hebrew morphology code decoder
 // Format: Position-based codes like "Ncfsa" (Noun, common, feminine, singular, absolute)
@@ -479,11 +478,4 @@ export async function loadVerse(ref: string): Promise<Verse> {
     }
     throw error;
   }
-}
-
-/**
- * Get list of available books
- */
-export function getAvailableBooks(): string[] {
-  return OT_BOOKS.map(book => book.name);
 }
