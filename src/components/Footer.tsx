@@ -3,12 +3,9 @@ export function Footer() {
     <>
       <hr />
       <div className="text-xs text-slate-500">
-        Morphology data provided by{" "}
-        <a
-          className="text-blue-500"
-          href="https://github.com/morphgnt/morphgnt-api"
-        >
-          MorphGNT
+        Original work of the Open Scriptures Hebrew Bible available at
+        <a href="https://github.com/openscriptures/morphhb">
+          https://github.com/openscriptures/morphhb
         </a>
         <hr />
         Copyright 2025 Titus Murphy. All rights reserved. For issues or
