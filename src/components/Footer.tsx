@@ -10,6 +10,9 @@ export function Footer() {
         >
           https://github.com/openscriptures/morphhb
         </a>
+        . If there is a mistake in the parsing, it would be cool if you told
+        them by opening an issue there instead of telling me, but I'm happy to
+        pass on the information!
         <hr />
         Copyright 2025 Titus Murphy. All rights reserved. For issues or
         requests, submit an issue by clicking{" "}
