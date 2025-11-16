@@ -66,8 +66,10 @@ export function WordCard({ w, answer, onChange, disabled }: WordCardProps) {
             const isSuffixField = f.key === 'suffix' || f.key === 'suffixPerson' || f.key === 'suffixGender' || f.key === 'suffixNumber';
             return f.key !== "prefix" && !isSuffixField;
           }).map(f => {
-            // Always show POS field
+            // Show POS field only if gold parsing has a POS value
             if (f.key === "pos") {
+              // Check if gold parsing has a POS value
+              if (!goldPos) return null;
               const status = getFieldStatus(f.key);
               let selectClassName = "select";
               if (status === "correct") {
@@ -162,8 +164,6 @@ export function WordCard({ w, answer, onChange, disabled }: WordCardProps) {
             answer={answer}
             onChange={onChange}
             disabled={disabled}
-            hasAnyGoldAnswers={!!hasAnyGoldAnswers}
-            isPosCorrect={isPosCorrect}
           />
         </div>
       )}

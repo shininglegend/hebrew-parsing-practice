@@ -1,4 +1,4 @@
-import { FIELD_SPECS, normalizeMissing, isFieldRelevant } from "../utils";
+import { FIELD_SPECS, normalizeMissing } from "../utils";
 import type { DrillAnswer, ParseFields, Word } from "../types";
 
 interface SuffixFieldsProps {
@@ -6,37 +6,17 @@ interface SuffixFieldsProps {
   answer?: DrillAnswer;
   onChange: (id: string, key: string, val: string) => void;
   disabled?: boolean;
-  hasAnyGoldAnswers: boolean;
-  isPosCorrect: boolean;
 }
 
 export function SuffixFields({ 
   word, 
   answer, 
   onChange, 
-  disabled, 
-  hasAnyGoldAnswers, 
-  isPosCorrect 
+  disabled
 }: SuffixFieldsProps) {
-  if (!isPosCorrect) return null;
-
-  const selectedPos = typeof answer?.pos === 'string' ? answer.pos : undefined;
-  
-  // Build a ParseFields object from the current answer for context
-  const currentParse: ParseFields = {
-    pos: typeof answer?.pos === 'string' ? answer.pos : undefined,
-    prefix: Array.isArray(answer?.prefix) ? answer.prefix : undefined,
-    state: typeof answer?.state === 'string' ? answer.state : undefined,
-    gender: typeof answer?.gender === 'string' ? answer.gender : undefined,
-    number: typeof answer?.number === 'string' ? answer.number : undefined,
-    person: typeof answer?.person === 'string' ? answer.person : undefined,
-    stem: typeof answer?.stem === 'string' ? answer.stem : undefined,
-    tense: typeof answer?.tense === 'string' ? answer.tense : undefined,
-    suffix: typeof answer?.suffix === 'string' ? answer.suffix : undefined,
-    suffixPerson: typeof answer?.suffixPerson === 'string' ? answer.suffixPerson : undefined,
-    suffixGender: typeof answer?.suffixGender === 'string' ? answer.suffixGender : undefined,
-    suffixNumber: typeof answer?.suffixNumber === 'string' ? answer.suffixNumber : undefined,
-  };
+  // Check if gold parsing has a suffix value
+  const goldSuffix = typeof word.parse?.suffix === 'string' ? normalizeMissing(word.parse.suffix) : undefined;
+  if (!goldSuffix) return null;
 
   // Helper to determine field status
   const getFieldStatus = (key: keyof ParseFields): "correct" | "incorrect" | "neutral" => {
@@ -55,22 +35,20 @@ export function SuffixFields({
     f.key === 'suffix' || f.key === 'suffixPerson' || f.key === 'suffixGender' || f.key === 'suffixNumber'
   );
 
+  // Check if the basic suffix field is answered correctly
+  const userSuffix = typeof answer?.suffix === 'string' ? normalizeMissing(answer.suffix) : undefined;
+  const isSuffixCorrect = userSuffix === goldSuffix;
+
   const visibleFields = suffixFieldSpecs.filter(f => {
-    // For suffix fields, pass the gold parse data to check if they exist
-    const parseForRelevance = { 
-      ...currentParse, 
-      suffix: typeof word.parse?.suffix === 'string' ? word.parse.suffix : undefined 
-    };
-    const relevant = isFieldRelevant(selectedPos, f.key, parseForRelevance);
+    // Always show the basic suffix field
+    if (f.key === 'suffix') return true;
     
-    if (!relevant) return false;
+    // Only show other suffix fields if basic suffix is correct and gold has a value for them
+    if (!isSuffixCorrect) return false;
     
-    // If gold answers exist for this word, hide fields with no gold answer
-    if (hasAnyGoldAnswers) {
-      const goldValue = word.parse?.[f.key];
-      if (goldValue === undefined || (typeof goldValue === 'string' && normalizeMissing(goldValue) === undefined)) {
-        return false;
-      }
+    const goldValue = word.parse?.[f.key];
+    if (goldValue === undefined || (typeof goldValue === 'string' && normalizeMissing(goldValue) === undefined)) {
+      return false;
     }
     
     return true;
