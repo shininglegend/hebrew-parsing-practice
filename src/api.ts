@@ -45,15 +45,19 @@ function decodeHebrewMorphology(code: string): Partial<ParseFields> {
   // Handle special prefix codes (H + letter)
   if (firstChar === 'H' && code.length >= 2) {
     const prefixType = code[1];
+    let prefix: string | undefined;
     switch (prefixType) {
-      case 'b': fields.prefix = 'ב (in/with)'; break;
-      case 'l': fields.prefix = 'ל (to/for)'; break;
-      case 'k': fields.prefix = 'כ (like/as)'; break;
-      case 'm': fields.prefix = 'מ (from)'; break;
-      case 'c': fields.prefix = 'ו (and)'; break;
-      case 'd': fields.prefix = 'ה (the)'; break;
-      case 's': fields.prefix = 'ש (that/which)'; break;
-      case 'i': fields.prefix = 'interrogative ה'; break;
+      case 'b': prefix = 'ב (in/with)'; break;
+      case 'l': prefix = 'ל (to/for)'; break;
+      case 'k': prefix = 'כ (like/as)'; break;
+      case 'm': prefix = 'מ (from)'; break;
+      case 'c': prefix = 'ו (and)'; break;
+      case 'd': prefix = 'ה (the)'; break;
+      case 's': prefix = 'ש (that/which)'; break;
+      case 'i': prefix = 'interrogative ה'; break;
+    }
+    if (prefix) {
+      fields.prefix = [prefix];
     }
     // These are just prefixes, not the main word
     return fields;
@@ -431,23 +435,48 @@ export async function loadVerse(ref: string): Promise<Verse> {
       
       // Check if this is a compound word (prefix/suffix attached with /)
       const morphParts = morphCode.split('/');
+      const strongsParts = strongs.split('/');
       
       // Decode all morphology parts and merge them
       const parsedFields: Partial<ParseFields> = {};
+      const prefixes: string[] = [];
       
-      for (const part of morphParts) {
-        if (part && part.length > 0) {
-          const decoded = decodeHebrewMorphology(part);
-          
-          // Skip vav conjunction prefix (Hc) - too common and invariant to be worth parsing
-          // User will see it in the surface text but won't need to parse it
-          if (decoded.prefix === 'ו (and)') {
-            continue; // Skip adding this to parsedFields
+      for (let i = 0; i < morphParts.length; i++) {
+        const part = morphParts[i];
+        if (!part || part.length === 0) continue;
+        
+        const decoded = decodeHebrewMorphology(part);
+        
+        // Special case: Some morphology codes represent prefixes when they appear
+        // in compound forms (e.g., "C/R" where C is the ו prefix, not standalone conjunction)
+        // Check if the corresponding Strong's code is a prefix marker (Hx format)
+        const correspondingStrong = strongsParts[i] || '';
+        const isStrongPrefix = correspondingStrong.match(/^H[bklmcdsi]$/i);
+        
+        if (isStrongPrefix && i < morphParts.length - 1) {
+          // This morphology part represents a prefix, decode it as such
+          if (part === 'C') {
+            prefixes.push('ו (and)');
+          } else if (part === 'R') {
+            // Preposition prefix - determine which one from Strong's
+            if (correspondingStrong === 'Hb') prefixes.push('ב (in/with)');
+            else if (correspondingStrong === 'Hl') prefixes.push('ל (to/for)');
+            else if (correspondingStrong === 'Hk') prefixes.push('כ (like/as)');
+            else if (correspondingStrong === 'Hm') prefixes.push('מ (from)');
+          } else if (part.startsWith('T')) {
+            // Article prefix
+            prefixes.push('ה (the)');
           }
-          
-          // Merge decoded fields into parsedFields
+          // Don't merge POS for prefix parts
+        } else {
+          // Regular word part - merge all fields
           Object.assign(parsedFields, decoded);
         }
+      }
+      
+      // Add prefixes array if any were found
+      if (prefixes.length > 0) {
+        parsedFields.prefix = prefixes;
       }
       
       // Create a single word with combined morphology

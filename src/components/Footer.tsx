@@ -3,8 +3,11 @@ export function Footer() {
     <>
       <hr />
       <div className="text-xs text-slate-500">
-        Original work of the Open Scriptures Hebrew Bible available at
-        <a href="https://github.com/openscriptures/morphhb">
+        Original work of the Open Scriptures Hebrew Bible available at{" "}
+        <a
+          className="text-blue-500"
+          href="https://github.com/openscriptures/morphhb"
+        >
           https://github.com/openscriptures/morphhb
         </a>
         <hr />

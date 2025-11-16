@@ -3,6 +3,7 @@ import type { FieldSpec, ParseFields } from "./types";
 
 export const FIELD_SPECS: FieldSpec[] = [
   { key: "pos",    label: "Part of Speech", options: ["noun (common)","noun (proper)","noun (gentilic)","verb","adjective","numeral","preposition","pronoun","conjunction","particle","adverb","interjection","—"] },
+  { key: "prefix", label: "Prefix",         options: ["ב (in/with)","ל (to/for)","כ (like/as)","מ (from)","ו (and)","ה (the)","ש (that/which)","interrogative ה","—"] },
   { key: "state",  label: "State",          options: ["absolute","construct","determined","—"] },
   { key: "gender", label: "Gender",         options: ["masculine","feminine","common","—"] },
   { key: "number", label: "Number",         options: ["singular","plural","dual","—"] },
@@ -63,8 +64,40 @@ export function scoreParse(
   let total = 0, correct = 0;
   const details: { key: keyof ParseFields; ok: boolean; gold?: string; guess?: string }[] = [];
   FIELD_SPECS.forEach(f => {
-    const g = normalizeMissing(gold?.[f.key]);
-    const u = normalizeMissing(guess[f.key]);
+    const goldValue = gold?.[f.key];
+    const guessValue = guess[f.key];
+    
+    // Special handling for prefix (array comparison)
+    if (f.key === 'prefix') {
+      const goldPrefixes = Array.isArray(goldValue) ? goldValue : (goldValue ? [goldValue as string] : []);
+      const guessPrefixes = Array.isArray(guessValue) ? guessValue : (guessValue ? [guessValue as string] : []);
+      
+      const normalizedGold = goldPrefixes.map(p => normalizeMissing(p)).filter(Boolean) as string[];
+      const normalizedGuess = guessPrefixes.map(p => normalizeMissing(p)).filter(Boolean) as string[];
+      
+      if (normalizedGold.length === 0) return; // field not provided → ignore
+      total += 1;
+      
+      // Compare arrays (order-independent, set equality)
+      const goldSet = new Set(normalizedGold);
+      const guessSet = new Set(normalizedGuess);
+      
+      const ok = goldSet.size === guessSet.size && 
+                 Array.from(goldSet).every(item => guessSet.has(item));
+      
+      if (ok) correct += 1;
+      details.push({ 
+        key: f.key, 
+        ok, 
+        gold: normalizedGold.join(', '), 
+        guess: normalizedGuess.join(', ') 
+      });
+      return;
+    }
+    
+    // Regular field comparison
+    const g = normalizeMissing(typeof goldValue === 'string' ? goldValue : undefined);
+    const u = normalizeMissing(typeof guessValue === 'string' ? guessValue : undefined);
     if (g === undefined) return; // field not provided → ignore
     total += 1;
     const ok = g === u;
@@ -165,6 +198,12 @@ export function isFieldRelevant(
   if (!pos) return true; // Show all fields if no POS selected
   const normalized = normalizeMissing(pos);
   if (!normalized) return true;
+  
+  // Handle prefix field separately
+  if (field === 'prefix') {
+    // Only show prefix if there's a prefix present in the gold data
+    return parseFields?.prefix !== undefined;
+  }
   
   // Handle suffix fields separately
   if (field === 'suffix' || field === 'suffixPerson' || field === 'suffixGender' || field === 'suffixNumber') {

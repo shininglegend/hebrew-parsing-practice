@@ -69,7 +69,7 @@ export function ParserDrill() {
     [verseData]
   );
 
-  function setAnswer(id: string, key: string, val: string) {
+  function setAnswer(id: string, key: string, val: string | string[]) {
     setAnswers((prev) => ({ ...prev, [id]: { ...prev[id], [key]: val } }));
   }
 
@@ -101,7 +101,11 @@ export function ParserDrill() {
       const answer = answers[w.id];
       if (!answer) return false;
       // Check if at least one field has been filled
-      return Object.values(answer).some((val) => val && val.trim() !== "");
+      return Object.values(answer).some((val) => {
+        if (!val) return false;
+        if (Array.isArray(val)) return val.length > 0;
+        return typeof val === 'string' && val.trim() !== "";
+      });
     });
 
     if (!allAnswered) return;

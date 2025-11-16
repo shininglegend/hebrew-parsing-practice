@@ -8,7 +8,7 @@ export type ParseFields = {
   tense?: string;    // Verb tense (perfect, imperfect, imperative, etc.)
   
   // Additional Hebrew-specific fields
-  prefix?: string;   // Prefixes like ב, ל, כ, מ, ו, ה, ש
+  prefix?: string[];   // Prefixes like ב, ל, כ, מ, ו, ה, ש (can have multiple)
   suffix?: string;   // Suffix type (pronominal, directional, etc.)
   suffixPerson?: string;  // Person of pronominal suffix
   suffixGender?: string;  // Gender of pronominal suffix
@@ -36,7 +36,7 @@ export type Verse = {
 };
 
 export type DrillAnswer = {
-  [k: string]: string | undefined;
+  [k: string]: string | string[] | undefined;
 };
 
 export type FieldSpec = {
