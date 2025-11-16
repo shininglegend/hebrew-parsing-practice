@@ -41,7 +41,7 @@ export function WordCard({ w, answer, onChange, disabled }: WordCardProps) {
   const isPosCorrect = !!(selectedPos && goldPos && normalizeMissing(selectedPos) === goldPos);
   
   return (
-    <div className="card space-y-2">
+    <div className="card space-y-2" dir="ltr">
       <div className="flex items-center gap-3">
         <button className="badge" onClick={() => setOpen(!open)} type="button">
           {open ? "−" : "+"}

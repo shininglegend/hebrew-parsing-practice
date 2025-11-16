@@ -151,7 +151,7 @@ export function ParserDrill() {
 
       {verseData && wordsToShow.length > 0 && (
         <>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-2" dir="rtl">
             {wordsToShow.map((w) => (
               <WordCard
                 key={w.id}
