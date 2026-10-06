@@ -30,13 +30,16 @@
 // - hiphilPerfect: Hiphil perfect conjugations
 // - pronouns: Independent personal pronouns
 
-export const MORPHOLOGY_CHARTS: Record<string, {
-  title: string;
-  tables: Array<{
-    subtitle?: string;
-    headers: string[];
-    rows: string[][];
-  }>;
-}> = {
+export const MORPHOLOGY_CHARTS: Record<
+  string,
+  {
+    title: string;
+    tables: Array<{
+      subtitle?: string;
+      headers: string[];
+      rows: string[][];
+    }>;
+  }
+> = {
   // Add chart data here following the structure above
 };

@@ -72,8 +72,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Verb Spotlight",
         definition:
           "For verbs, focus on identifying the stem/binyan from consonant patterns and prefixes, then the tense/aspect and person/gender/number from prefixes and suffixes. Context will help you decide between possible English tense translations.",
-        example:
-          "נִשְׁמַר (nishmar) → Niphal perfect 3ms of שׁמר, 'he was kept / he was guarded'",
+        example: "נִשְׁמַר (nishmar) → Niphal perfect 3ms of שׁמר, 'he was kept / he was guarded'",
       },
     ],
   },
@@ -90,8 +89,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Verb",
         definition:
           "A word that expresses action or state of being. Verbs inflect for stem/binyan, tense/aspect, person, gender, and number, and may take pronominal suffixes.",
-        example:
-          "כָּתַב (katav) - he wrote; יִכְתֹּב (yikhtov) - he will write / he writes",
+        example: "כָּתַב (katav) - he wrote; יִכְתֹּב (yikhtov) - he will write / he writes",
       },
       {
         term: "Adjective",
@@ -103,8 +101,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Numeral",
         definition:
           "A word expressing number or order. Many Hebrew numerals have gender and sometimes irregular agreement patterns.",
-        example:
-          "שְׁנֵי (shnei) - two (construct masc.); שָׁלֹשׁ (shalosh) - three (fem.)",
+        example: "שְׁנֵי (shnei) - two (construct masc.); שָׁלֹשׁ (shalosh) - three (fem.)",
       },
       {
         term: "Preposition",
@@ -128,8 +125,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Particle",
         definition:
           "A small word with specialized grammatical function or emphasis. Many particles do not inflect and can be tricky but very important for interpretation.",
-        example:
-          "אֶת (et) - direct object marker; הִנֵּה (hinneh) - behold; אַךְ (akh) - surely / only",
+        example: "אֶת (et) - direct object marker; הִנֵּה (hinneh) - behold; אַךְ (akh) - surely / only",
       },
       {
         term: "Adverb",
@@ -141,8 +137,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Interjection",
         definition:
           "An exclamatory form expressing emotion, calling attention, or marking a discourse boundary.",
-        example:
-          "אוֹי (oy) - woe!; הוֹי (hoy) - alas!; הִנֵּה (hinneh) - behold!",
+        example: "אוֹי (oy) - woe!; הוֹי (hoy) - alas!; הִנֵּה (hinneh) - behold!",
       },
     ],
   },
@@ -153,8 +148,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Prepositional Prefixes",
         definition:
           "Common prepositions that attach directly to a following word. They often combine with the article and may cause vowel and consonant changes.",
-        example:
-          "בְּבַיִת (be-vayit) - in a house; לַמֶּלֶךְ (la-melekh) = ל + ה + מֶלֶךְ → 'to the king'",
+        example: "בְּבַיִת (be-vayit) - in a house; לַמֶּלֶךְ (la-melekh) = ל + ה + מֶלֶךְ → 'to the king'",
       },
       {
         term: "Conjunctive ו",
@@ -166,8 +160,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Definite Article ה",
         definition:
           "The article ה (ha-) is prefixed to definite nouns and adjectives. It often lengthens the following vowel and may cause doubling (dagesh forte) in the next consonant when possible.",
-        example:
-          "הַמֶּלֶךְ (ha-melekh) - the king; הַסֵּפֶר (ha-sefer) - the book",
+        example: "הַמֶּלֶךְ (ha-melekh) - the king; הַסֵּפֶר (ha-sefer) - the book",
       },
       {
         term: "Relative ש",
@@ -179,8 +172,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Interrogative ה",
         definition:
           "The interrogative particle ה (ha-) attaches to the beginning of a word to mark a yes/no question. It is distinct from the article by context and vocalization.",
-        example:
-          "הֲתֵדְעוּ (ha-ted'u) - do you know?; הֲשָׁמַעְתָּ (ha-sham'ata) - have you heard?",
+        example: "הֲתֵדְעוּ (ha-ted'u) - do you know?; הֲשָׁמַעְתָּ (ha-sham'ata) - have you heard?",
       },
     ],
   },
@@ -222,22 +214,18 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Niphal",
         definition:
           "Usually the passive or reflexive counterpart of Qal, sometimes with middle or tolerative nuance.",
-        example:
-          "נִשְׁמַר (nishmar) - he was kept/guarded; נִכְתַּב (nikhtav) - it was written",
+        example: "נִשְׁמַר (nishmar) - he was kept/guarded; נִכְתַּב (nikhtav) - it was written",
       },
       {
         term: "Piel",
         definition:
           "An intensive or factitive stem, often expressing repeated, intensive, or causative-like action compared to Qal.",
-        example:
-          "דִּבֵּר (dibber) - he spoke (intensively); קִדֵּשׁ (kiddesh) - he sanctified",
+        example: "דִּבֵּר (dibber) - he spoke (intensively); קִדֵּשׁ (kiddesh) - he sanctified",
       },
       {
         term: "Pual",
-        definition:
-          "The passive of Piel, expressing passive intensive or factitive action.",
-        example:
-          "קֻדַּשׁ (kuddash) - he/it was sanctified; שֻׁמַּר (shummar) - he/it was carefully kept",
+        definition: "The passive of Piel, expressing passive intensive or factitive action.",
+        example: "קֻדַּשׁ (kuddash) - he/it was sanctified; שֻׁמַּר (shummar) - he/it was carefully kept",
       },
       {
         term: "Hiphil",
@@ -248,8 +236,7 @@ export const GRAMMAR_DEFINITIONS: Record<
       },
       {
         term: "Hophal",
-        definition:
-          "The passive of Hiphil, expressing being caused to do or to be something.",
+        definition: "The passive of Hiphil, expressing being caused to do or to be something.",
         example:
           "הָקְטַל (hoqtal) (pattern) - he was caused to be killed; הָעֳמַד (ho'amad) - he was caused to stand",
       },
@@ -276,29 +263,25 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Perfect (Qatal)",
         definition:
           "Suffix conjugation, often expressing completed action (frequently past), or a state viewed as complete. Context can give present or future nuances.",
-        example:
-          "כָּתַב (katav) - he wrote / has written; שָׁמַר (shamar) - he kept",
+        example: "כָּתַב (katav) - he wrote / has written; שָׁמַר (shamar) - he kept",
       },
       {
         term: "Imperfect (Yiqtol)",
         definition:
           "Prefix conjugation, often expressing incomplete, ongoing, habitual, or future action. Context determines whether it is future, present, or modal.",
-        example:
-          "יִכְתֹּב (yikhtov) - he will write / he writes; יִשְׁמֹר (yishmor) - he will keep",
+        example: "יִכְתֹּב (yikhtov) - he will write / he writes; יִשְׁמֹר (yishmor) - he will keep",
       },
       {
         term: "Wayyiqtol (Sequential Imperfect)",
         definition:
           "Imperfect form prefixed with וַ (vav-consecutive), frequently used in narrative to advance past-time events in sequence.",
-        example:
-          "וַיֹּאמֶר (vayomer) - and he said; וַיֵּלֶךְ (vayelekh) - and he went",
+        example: "וַיֹּאמֶר (vayomer) - and he said; וַיֵּלֶךְ (vayelekh) - and he went",
       },
       {
         term: "Weqatal (Sequential Perfect)",
         definition:
           "Perfect form joined with וְ (vav) functioning in sequences (especially after imperatives, jussives, or in prophetic style) with future or modal force.",
-        example:
-          "וְכָתַבְתָּ (ve-khatavta) - and you shall write; וְהָיָה (ve-hayah) - and it shall be",
+        example: "וְכָתַבְתָּ (ve-khatavta) - and you shall write; וְהָיָה (ve-hayah) - and it shall be",
       },
       {
         term: "Imperative",
@@ -317,15 +300,13 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Infinitive Construct and Absolute",
         definition:
           "Verbal noun forms. The construct form behaves like a noun and often follows prepositions; the absolute form can intensify or emphasize an accompanying finite verb.",
-        example:
-          "לִכְתֹּב (likhtov) - to write; כָּתוֹב תִּכְתֹּב (katov tikhtov) - you shall surely write",
+        example: "לִכְתֹּב (likhtov) - to write; כָּתוֹב תִּכְתֹּב (katov tikhtov) - you shall surely write",
       },
       {
         term: "Participle",
         definition:
           "A verbal adjective functioning as an adjective, noun, or verb expressing ongoing or habitual action. Participles inflect for gender and number.",
-        example:
-          "כֹּתֵב (kotev) - writing, one who writes; שֹׁמֵר (shomer) - guarding, one who guards",
+        example: "כֹּתֵב (kotev) - writing, one who writes; שֹׁמֵר (shomer) - guarding, one who guards",
       },
     ],
   },
@@ -336,22 +317,19 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "First Person",
         definition:
           "Refers to the speaker or speakers: 'I' (singular) or 'we' (plural). In verbs and pronouns, forms labeled first person indicate the subject is speaking.",
-        example:
-          "כָּתַבְתִּי (katavti) - I wrote; כָּתַבְנוּ (katavnu) - we wrote",
+        example: "כָּתַבְתִּי (katavti) - I wrote; כָּתַבְנוּ (katavnu) - we wrote",
       },
       {
         term: "Second Person",
         definition:
           "Refers to the person or people addressed: 'you' (singular or plural, masculine or feminine). Second person forms mark direct address.",
-        example:
-          "כָּתַבְתָּ (katavta) - you wrote (ms); כְּתֹב (ketov) - write! (ms)",
+        example: "כָּתַבְתָּ (katavta) - you wrote (ms); כְּתֹב (ketov) - write! (ms)",
       },
       {
         term: "Third Person",
         definition:
           "Refers to the person or thing being spoken about: 'he', 'she', 'it', or 'they'. Third person forms are very common in narrative.",
-        example:
-          "כָּתַב (katav) - he wrote; כָּתְבָה (katvah) - she wrote; כָּתְבוּ (katvu) - they wrote",
+        example: "כָּתַב (katav) - he wrote; כָּתְבָה (katvah) - she wrote; כָּתְבוּ (katvu) - they wrote",
       },
     ],
   },
@@ -362,22 +340,19 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Masculine",
         definition:
           "Grammatical gender used for many nouns, pronouns, and verb forms, often but not always referring to male beings or grammatically masculine nouns.",
-        example:
-          "מֶלֶךְ (melekh) - king; טוֹב (tov) - good (ms); כָּתַב (katav) - he wrote",
+        example: "מֶלֶךְ (melekh) - king; טוֹב (tov) - good (ms); כָּתַב (katav) - he wrote",
       },
       {
         term: "Feminine",
         definition:
           "Grammatical gender used for many nouns, pronouns, and verb forms, often but not always referring to female beings. Many feminine nouns end in ־ה or ־ת, but there are many exceptions.",
-        example:
-          "מַלְכָּה (malkah) - queen; טוֹבָה (tovah) - good (fs); כָּתְבָה (katvah) - she wrote",
+        example: "מַלְכָּה (malkah) - queen; טוֹבָה (tovah) - good (fs); כָּתְבָה (katvah) - she wrote",
       },
       {
         term: "Common",
         definition:
           "A form that can function for either masculine or feminine, especially in some pronouns, participles, and numerals. Context clarifies the actual referent.",
-        example:
-          "אֲנִי (ani) - I (common); כֹּתֵב (kotev) used generically - one who writes",
+        example: "אֲנִי (ani) - I (common); כֹּתֵב (kotev) used generically - one who writes",
       },
     ],
   },
@@ -400,8 +375,7 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Dual",
         definition:
           "A special number primarily used for naturally paired items and some measures of time. It is often marked by the ending ־ַיִם.",
-        example:
-          "יָדַיִם (yadayim) - (two) hands; יוֹמַיִם (yomayim) - (two) days",
+        example: "יָדַיִם (yadayim) - (two) hands; יוֹמַיִם (yomayim) - (two) days",
       },
     ],
   },
@@ -419,15 +393,13 @@ export const GRAMMAR_DEFINITIONS: Record<
         term: "Pronominal Suffixes on Prepositions",
         definition:
           "Pronoun endings attached to prepositions expressing the object of the preposition (to me, in you, with them, etc.).",
-        example:
-          "לִי (li) - to me; בְּךָ (bekha) - in you (ms); עֲלֵיהֶם (aleihem) - upon them (mp)",
+        example: "לִי (li) - to me; בְּךָ (bekha) - in you (ms); עֲלֵיהֶם (aleihem) - upon them (mp)",
       },
       {
         term: "Pronominal Suffixes on Verbs",
         definition:
           "Pronoun endings attached to verbs typically express a direct object (him, her, them) or sometimes an indirect object, depending on the verb and construction.",
-        example:
-          "כְּתָבָם (ketavam) - he wrote them; שְׁמָרָם (shemaram) - he guarded them",
+        example: "כְּתָבָם (ketavam) - he wrote them; שְׁמָרָם (shemaram) - he guarded them",
       },
       {
         term: "Directional ה (He Locale)",

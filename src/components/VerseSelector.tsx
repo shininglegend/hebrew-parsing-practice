@@ -1,5 +1,11 @@
-import { OT_BOOKS } from "../utils";
+import { useRef } from "react";
+import { plainSurface } from "../signals";
 import type { Word } from "../types";
+import { OT_BOOKS } from "../utils";
+
+function isPositiveInteger(value: string): boolean {
+  return /^[1-9]\d*$/.test(value.trim());
+}
 
 interface VerseSelectorProps {
   selectedBook: string;
@@ -17,6 +23,10 @@ interface VerseSelectorProps {
   selectedWordIds?: Set<string>;
   onWordToggle?: (wordId: string) => void;
   onNavigate?: (direction: "prev" | "next") => void;
+  lexiconLoaded?: boolean;
+  onLoadLexicon?: () => void;
+  loadingLexicon?: boolean;
+  hideSurface?: boolean;
 }
 
 export function VerseSelector({
@@ -35,33 +45,74 @@ export function VerseSelector({
   selectedWordIds,
   onWordToggle,
   onNavigate,
+  lexiconLoaded,
+  onLoadLexicon,
+  loadingLexicon,
+  hideSurface,
 }: VerseSelectorProps) {
   const hasWords = words && words.length > 0;
   const showWordSelection = hasWords && onWordToggle && selectedWordIds;
 
-  const currentVerse = parseInt(verse) || 1;
+  const currentVerse = parseInt(verse, 10) || 1;
   const canGoBack = currentVerse > 1;
+  const focusedValue = useRef({ chapter, verse });
+
+  function onFieldFocus() {
+    focusedValue.current = { chapter, verse };
+  }
+
+  function commitFields() {
+    const previous = focusedValue.current;
+    const next = { chapter, verse };
+    focusedValue.current = next;
+    if (previous.chapter === next.chapter && previous.verse === next.verse) return;
+    // An incomplete reference waits for Load or another edit.
+    if (!isPositiveInteger(chapter) || !isPositiveInteger(verse)) return;
+    onLoad();
+  }
+
+  function onFieldKeyDown(event: { key: string; preventDefault: () => void }) {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    commitFields();
+  }
+  const longestBookName = OT_BOOKS.reduce(
+    (longest, book) => (book.name.length > longest.length ? book.name : longest),
+    ""
+  );
 
   return (
-    <div className="card flex flex-col gap-3">
+    <div className="card mx-auto w-fit max-w-full flex flex-col gap-3">
       <div className="flex gap-2 flex-wrap">
-        <select
-          className="select flex-2 min-w-[180px]"
-          value={selectedBook}
-          onChange={(e) => onBookChange(e.target.value)}
-        >
-          {OT_BOOKS.map((b) => (
-            <option key={b.abbrev} value={b.filename}>
-              {b.name}
-            </option>
-          ))}
-        </select>
+        {/* Size the book select to the longest option, not the selected one */}
+        <div className="relative inline-grid max-w-full">
+          <span
+            className="invisible col-start-1 row-start-1 whitespace-pre px-2 py-1 pr-8"
+            aria-hidden
+          >
+            {longestBookName}
+          </span>
+          <select
+            className="select col-start-1 row-start-1 w-full min-w-0"
+            value={selectedBook}
+            onChange={(e) => onBookChange(e.target.value)}
+          >
+            {OT_BOOKS.map((b) => (
+              <option key={b.filename} value={b.name}>
+                {b.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <input
           className="input w-20"
           type="number"
           min="1"
           value={chapter}
           onChange={(e) => onChapterChange(e.target.value)}
+          onFocus={onFieldFocus}
+          onBlur={commitFields}
+          onKeyDown={onFieldKeyDown}
           placeholder="Ch"
         />
         <span className="flex items-center">:</span>
@@ -71,15 +122,19 @@ export function VerseSelector({
           min="1"
           value={verse}
           onChange={(e) => onVerseChange(e.target.value)}
+          onFocus={onFieldFocus}
+          onBlur={commitFields}
+          onKeyDown={onFieldKeyDown}
           placeholder="Vs"
         />
-        <button className="btn" onClick={onLoad}>
+        <button type="button" className="btn" onClick={onLoad}>
           Load
         </button>
 
         {onNavigate && (
           <>
             <button
+              type="button"
               className="btn"
               onClick={() => onNavigate("prev")}
               disabled={!canGoBack || loading}
@@ -88,6 +143,7 @@ export function VerseSelector({
               ← Back
             </button>
             <button
+              type="button"
               className="btn"
               onClick={() => onNavigate("next")}
               disabled={loading}
@@ -99,6 +155,23 @@ export function VerseSelector({
         )}
       </div>
 
+      {onLoadLexicon && hasWords && !lexiconLoaded && (
+        <button
+          type="button"
+          className="btn"
+          onClick={onLoadLexicon}
+          disabled={loadingLexicon || loading}
+        >
+          {loadingLexicon ? "Loading definitions..." : "Load Lexicon Definitions"}
+        </button>
+      )}
+
+      {lexiconLoaded && (
+        <div className="text-sm text-green-700">
+          ✓ Lexicon loaded - hover over lemmas for brief definitions, click for full
+        </div>
+      )}
+
       {!hideVerse && showWordSelection && (
         <>
           <div className="flex items-center justify-between">
@@ -107,38 +180,35 @@ export function VerseSelector({
             </div>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() =>
-                  words.forEach(
-                    (w) => !selectedWordIds.has(w.id) && onWordToggle(w.id)
-                  )
+                  words.forEach((w) => {
+                    if (!selectedWordIds.has(w.id)) onWordToggle(w.id);
+                  })
                 }
-                className="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-50"
+                className="text-xs px-2 py-1 rounded-sm border border-slate-300 hover:bg-slate-50"
               >
                 Select All
               </button>
               <button
+                type="button"
                 onClick={() =>
-                  words.forEach(
-                    (w) => selectedWordIds.has(w.id) && onWordToggle(w.id)
-                  )
+                  words.forEach((w) => {
+                    if (selectedWordIds.has(w.id)) onWordToggle(w.id);
+                  })
                 }
-                className="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-50"
+                className="text-xs px-2 py-1 rounded-sm border border-slate-300 hover:bg-slate-50"
               >
                 Clear All
               </button>
             </div>
           </div>
-          <div
-            className="flex flex-wrap items-center text-xl leading-relaxed"
-            dir="rtl"
-          >
+          <div className="flex flex-wrap gap-2 text-xl leading-relaxed font-hebrew" dir="rtl">
             {words.map((w) => {
               const isSelected = selectedWordIds.has(w.id);
-              // In RTL, we want space on the RIGHT side (which is "before" in reading order)
-              // This is achieved with margin-inline-start in RTL context
-              const needsSpace = w.afterSpace !== false;
               return (
                 <button
+                  type="button"
                   key={w.id}
                   onClick={() => onWordToggle(w.id)}
                   className={`px-2 py-1 rounded-md transition-colors cursor-pointer border-2 ${
@@ -146,25 +216,23 @@ export function VerseSelector({
                       ? "bg-blue-100 border-blue-500 text-blue-900 font-semibold"
                       : "bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100"
                   }`}
-                  style={{ marginInlineStart: needsSpace ? "0.75rem" : "0" }}
-                  title={`${w.surface} (${w.lemma || "unknown"})`}
+                  title={`${plainSurface(w.surface)} (${w.lemma || "unknown"})`}
                 >
-                  {w.surface}
+                  {plainSurface(w.surface)}
                 </button>
               );
             })}
           </div>
           <div className="text-xs text-slate-500">
-            {selectedWordIds.size} of {words.length} words selected
-            <br />
-            Note: This project uses the english verse numbering.
+            {selectedWordIds.size} of {words.length} words selected. Chapters and verses follow the
+            English numbering.
           </div>
         </>
       )}
 
-      {!hideVerse && !showWordSelection && (
+      {!hideVerse && !hideSurface && !showWordSelection && (
         <div className="text-base text-slate-700" dir="rtl">
-          <span className="font-mono text-lg">{surfaceLine}</span>
+          <span className="font-hebrew text-lg">{surfaceLine}</span>
         </div>
       )}
 

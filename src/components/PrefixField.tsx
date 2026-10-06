@@ -1,78 +1,111 @@
-import { normalizeMissing } from "../utils";
-import type { DrillAnswer, Word } from "../types";
+import type { Word } from "../types";
+import { FIELD_SPECS, joinPrefixes, splitPrefixes } from "../utils";
+
+const OPTIONS = (FIELD_SPECS.find((spec) => spec.key === "prefix")?.options ?? []).filter(
+  (option) => option !== "—"
+);
+
+export type PrefixStatus = "correct" | "incorrect" | "partial" | "neutral";
+
+/** Red as soon as a wrong prefix is ticked, green when the set matches, otherwise neutral. */
+export function prefixStatus(gold: string[] | undefined, value: string | undefined): PrefixStatus {
+  const chosen = splitPrefixes(value);
+  if (chosen.length === 0) return "neutral";
+  const goldSet = new Set(splitPrefixes(joinPrefixes(gold)));
+  if (goldSet.size === 0) return "neutral";
+  if (chosen.some((item) => !goldSet.has(item))) return "incorrect";
+  return chosen.length === goldSet.size ? "correct" : "partial";
+}
 
 interface PrefixFieldProps {
   word: Word;
-  answer?: DrillAnswer;
-  onChange: (id: string, key: string, val: string[]) => void;
+  /** The joined prefix string, as stored in the answer. */
+  value?: string;
+  onChange: (id: string, key: "prefix", value: string) => void;
   disabled?: boolean;
-  options: string[];
+  /** Pill buttons (study screen) or checkboxes (the card drill). */
+  variant?: "pills" | "checkboxes";
 }
 
-export function PrefixField({ word, answer, onChange, disabled, options }: PrefixFieldProps) {
-  // Check if prefix field is relevant
-  const goldPrefixes = word.parse?.prefix;
-  if (!goldPrefixes || (Array.isArray(goldPrefixes) && goldPrefixes.length === 0)) {
-    return null;
+export function PrefixField({
+  word,
+  value,
+  onChange,
+  disabled,
+  variant = "pills",
+}: PrefixFieldProps) {
+  const gold = word.parse?.prefix;
+  if (!gold || gold.length === 0) return null;
+
+  const chosen = splitPrefixes(value);
+  const status = prefixStatus(gold, value);
+
+  function toggle(option: string) {
+    const next = chosen.includes(option)
+      ? chosen.filter((item) => item !== option)
+      : [...chosen, option];
+    onChange(word.id, "prefix", joinPrefixes(next) ?? "");
   }
 
-  const userPrefixes = Array.isArray(answer?.prefix) ? answer.prefix : [];
-  
-  // Determine field status
-  const getFieldStatus = (): "correct" | "incorrect" | "neutral" => {
-    if (userPrefixes.length === 0) return "neutral";
-    
-    const goldPrefixArray = Array.isArray(goldPrefixes) ? goldPrefixes : (goldPrefixes ? [goldPrefixes] : []);
-    if (goldPrefixArray.length === 0) return "neutral";
-    
-    // Normalize and create sets
-    const userSet = new Set(userPrefixes.map(p => normalizeMissing(p)).filter(Boolean));
-    const goldSet = new Set(goldPrefixArray.map(p => normalizeMissing(p)).filter(Boolean));
-    
-    // If any wrong answer is selected, red
-    for (const item of userSet) {
-      if (!goldSet.has(item)) return "incorrect";
-    }
-    
-    // If all right answers are selected, green
-    if (userSet.size === goldSet.size) return "correct";
-    
-    // Otherwise (some correct but not all), no color
-    return "neutral";
-  };
-
-  const status = getFieldStatus();
-  let containerClassName = "flex flex-col gap-2 p-2 border rounded";
-  if (status === "correct") {
-    containerClassName += " border-green-500 bg-green-50";
-  } else if (status === "incorrect") {
-    containerClassName += " border-red-500 bg-red-50";
-  } else {
-    containerClassName += " border-gray-300";
-  }
-  
-  return (
-    <div className={containerClassName}>
-      <span className="text-xs text-slate-600 font-semibold">Prefix</span>
-      <div className="flex flex-wrap gap-3">
-        {options.filter(o => o !== "—").map(option => (
-          <label key={option} className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              disabled={disabled}
-              checked={userPrefixes.includes(option)}
-              onChange={e => {
-                const newPrefixes = e.target.checked
-                  ? [...userPrefixes, option]
-                  : userPrefixes.filter(p => p !== option);
-                onChange(word.id, "prefix", newPrefixes);
-              }}
-              className="rounded"
-            />
-            <span>{option}</span>
-          </label>
-        ))}
+  if (variant === "checkboxes") {
+    const border =
+      status === "correct"
+        ? "border-green-500 bg-green-50"
+        : status === "incorrect"
+          ? "border-red-500 bg-red-50"
+          : "border-gray-300";
+    return (
+      <div className={`flex flex-col gap-2 p-2 border rounded-sm ${border}`}>
+        <span className="text-xs text-slate-600 font-semibold">
+          Prefix{gold.length > 1 ? ` (${gold.length})` : ""}
+        </span>
+        <div className="flex flex-wrap gap-3">
+          {OPTIONS.map((option) => (
+            <label key={option} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                disabled={disabled}
+                checked={chosen.includes(option)}
+                onChange={() => toggle(option)}
+                className="rounded-sm"
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <fieldset>
+      <legend className="text-xs text-slate-600 mb-1">
+        Prefix{gold.length > 1 ? ` — choose ${gold.length}` : ""}
+      </legend>
+      <div className="flex flex-wrap gap-1.5">
+        {OPTIONS.map((option) => {
+          const pressed = chosen.includes(option);
+          const tone = !pressed
+            ? "bg-white border-slate-300"
+            : status === "correct"
+              ? "bg-green-100 border-green-600"
+              : status === "incorrect"
+                ? "bg-red-100 border-red-600"
+                : "bg-slate-900 text-white border-slate-900";
+          return (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={pressed}
+              disabled={disabled}
+              onClick={() => toggle(option)}
+              className={`min-h-9 px-2.5 py-1 rounded-md border text-sm ${tone}`}
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }

@@ -1,0 +1,449 @@
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { buildChecklist } from "../checklist";
+import { useSession } from "../session";
+import { plainSurface } from "../signals";
+import { ApiError, askTutor } from "../studyApi";
+import {
+  defaultVersionIds,
+  MAX_SELECTED_VERSIONS,
+  toggleVersion,
+  VERSIONS,
+  type VersionText,
+  versionsForTutor,
+  versionTexts,
+  watchVersions,
+} from "../translations";
+import { splitTutorNote } from "../tutorNote";
+import type { Verse, Word } from "../types";
+import { FIELD_SPECS, goldValue } from "../utils";
+
+function growTextarea(element: HTMLTextAreaElement) {
+  element.style.height = "0px";
+  const border = element.offsetHeight - element.clientHeight;
+  element.style.height = `${element.scrollHeight + border}px`;
+}
+
+function useGrowingTextarea() {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    // Current browsers grow the field from the stylesheet. Older mobile Safari does not.
+    if (!element || CSS.supports("field-sizing", "content")) return;
+    growTextarea(element);
+  });
+
+  useEffect(() => {
+    const element = ref.current;
+    const parent = element?.parentElement;
+    if (!element || !parent || CSS.supports("field-sizing", "content")) return;
+    let width = parent.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (parent.clientWidth === width) return;
+      width = parent.clientWidth;
+      growTextarea(element);
+    });
+    observer.observe(parent);
+    return () => {
+      observer.disconnect();
+      element.style.height = "";
+    };
+  }, []);
+
+  return ref;
+}
+
+function TutorWait() {
+  const [progress, setProgress] = useState(6);
+  useEffect(() => {
+    const started = Date.now();
+    const id = window.setInterval(() => {
+      const seconds = (Date.now() - started) / 1000;
+      setProgress(6 + 88 * (1 - Math.exp(-seconds / 45)));
+    }, 200);
+    return () => window.clearInterval(id);
+  }, []);
+  return (
+    <div className="space-y-2">
+      <div
+        className="h-2 overflow-hidden rounded-full bg-slate-200"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress)}
+        aria-label="Asking the tutor"
+      >
+        <div className="h-full rounded-full bg-slate-900" style={{ width: `${progress}%` }} />
+      </div>
+      <p className="text-sm text-slate-600">
+        Working through the parse. This often takes a minute.
+      </p>
+    </div>
+  );
+}
+
+function TutorNote({ note }: { note: string }) {
+  const parts = splitTutorNote(note);
+  if (!parts) return <p className="text-sm whitespace-pre-wrap">{note}</p>;
+  return (
+    <div className="space-y-3 text-sm">
+      <section className="space-y-1">
+        <h3 className="font-semibold">What you got wrong</h3>
+        <p className="whitespace-pre-wrap">{parts.wrong}</p>
+      </section>
+      <section className="space-y-1">
+        <h3 className="font-semibold">What you got right</h3>
+        <p className="whitespace-pre-wrap">{parts.right}</p>
+      </section>
+    </div>
+  );
+}
+
+function parseLines(word: Word): { label: string; value: string; hebrew?: boolean }[] {
+  const lines: { label: string; value: string; hebrew?: boolean }[] = [];
+  if (word.lemma) lines.push({ label: "Strong's", value: word.lemma });
+  if (word.definition?.brief) lines.push({ label: "Translation", value: word.definition.brief });
+  for (const spec of FIELD_SPECS) {
+    const value = goldValue(word.parse, spec.key);
+    if (value) lines.push({ label: spec.label, value });
+  }
+  return lines;
+}
+
+const FINE_POINTER = "(hover: hover) and (pointer: fine) and (min-width: 640px)";
+
+function useFinePointer() {
+  const [fine, setFine] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(FINE_POINTER).matches
+  );
+  useEffect(() => {
+    const media = window.matchMedia(FINE_POINTER);
+    const update = () => setFine(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return fine;
+}
+
+function TranslateWord({
+  word,
+  open,
+  chosen,
+  selectable,
+  onToggle,
+  onChoose,
+}: {
+  word: Word;
+  open: boolean;
+  chosen: boolean;
+  selectable: boolean;
+  onToggle: () => void;
+  onChoose: () => void;
+}) {
+  const lines = parseLines(word);
+  return (
+    <button
+      type="button"
+      className={`group relative rounded-md px-0.5 text-left ${
+        !selectable || chosen ? "text-slate-900" : "text-slate-400"
+      } ${selectable && chosen ? "underline decoration-slate-800 decoration-2 underline-offset-4" : ""}`}
+      aria-expanded={open}
+      aria-pressed={selectable ? chosen : undefined}
+      onClick={(event) => {
+        const native = event.nativeEvent;
+        const pointerType = "pointerType" in native ? String(native.pointerType) : "";
+        // A mouse click chooses which words to translate. Hover, and tap on a phone, show the parse.
+        if (selectable && pointerType === "mouse") {
+          onChoose();
+          return;
+        }
+        onToggle();
+      }}
+    >
+      <span className="font-hebrew text-xl">{plainSurface(word.surface)}</span>
+      <span
+        role="tooltip"
+        dir="ltr"
+        className={`absolute start-0 top-full z-20 mt-1 w-max max-w-xs rounded-md bg-slate-800 px-2.5 py-1.5 text-left text-xs leading-relaxed text-white shadow-lg ${
+          open ? "block" : "hidden group-hover:block group-focus-visible:block"
+        }`}
+      >
+        {lines.length > 0 ? (
+          lines.map((line) => (
+            <span key={line.label} className="block">
+              <span className="text-slate-300">{line.label}: </span>
+              <span className={line.hebrew ? "font-hebrew text-sm" : undefined}>{line.value}</span>
+            </span>
+          ))
+        ) : (
+          <span className="block">No parse recorded</span>
+        )}
+      </span>
+    </button>
+  );
+}
+
+export function TranslateStep({
+  verse,
+  english,
+  onEnglish,
+  translateWordIds,
+  onTranslateWordIds,
+  showCompare,
+  onShowCompare,
+}: {
+  verse: Verse;
+  english: string;
+  onEnglish: (value: string) => void;
+  translateWordIds: string[];
+  onTranslateWordIds: (ids: string[]) => void;
+  showCompare: boolean;
+  onShowCompare: (show: boolean) => void;
+}) {
+  const { user } = useSession();
+  const [versions, setVersions] = useState<VersionText[]>(() => versionTexts(verse.ref));
+  const [selectedIds, setSelectedIds] = useState<string[]>(defaultVersionIds);
+  const [note, setNote] = useState<string | null>(null);
+  const [noteError, setNoteError] = useState<string | null>(null);
+  const [noteLoading, setNoteLoading] = useState(false);
+  const chosenIds = useMemo(() => new Set(translateWordIds), [translateWordIds]);
+  const canSelect = useFinePointer();
+  const chosen = canSelect ? verse.words.filter((word) => chosenIds.has(word.id)) : verse.words;
+  const checklist = buildChecklist(verse.words).filter((line) =>
+    chosen.some((word) => word.id === line.wordId)
+  );
+  const translating =
+    chosen.length === verse.words.length
+      ? "the whole verse"
+      : chosen.map((word) => plainSurface(word.surface)).join(", ");
+  const approved = user?.status === "approved" || user?.role === "admin";
+  const [openWordId, setOpenWordId] = useState<string | null>(null);
+  const wordRowRef = useRef<HTMLDivElement>(null);
+  const englishRef = useGrowingTextarea();
+
+  function toggleChosen(id: string) {
+    const next = new Set(translateWordIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    onTranslateWordIds([...next]);
+    setNote(null);
+  }
+
+  useEffect(() => {
+    if (!openWordId) return;
+    function closeOnOutside(event: PointerEvent) {
+      if (wordRowRef.current?.contains(event.target as Node)) return;
+      setOpenWordId(null);
+    }
+    document.addEventListener("pointerdown", closeOnOutside);
+    return () => document.removeEventListener("pointerdown", closeOnOutside);
+  }, [openWordId]);
+
+  useEffect(() => {
+    const update = () => setVersions(versionTexts(verse.ref));
+    update();
+    return watchVersions(verse.ref, update, selectedIds);
+  }, [verse.ref, selectedIds]);
+
+  const shown = versions.filter((version) => selectedIds.includes(version.id));
+  const hasVersion = shown.some((version) => version.status === "ready");
+  const allSettled = shown.every(
+    (version) => version.status === "ready" || version.status === "missing"
+  );
+
+  async function requestNote() {
+    if (!approved || !hasVersion || chosen.length === 0) return;
+    setNoteLoading(true);
+    setNote(null);
+    setNoteError(null);
+    try {
+      const result = await askTutor("/api/translation-note", {
+        verseRef: verse.ref,
+        hebrew: verse.words.map((word) => plainSurface(word.surface)).join(" "),
+        translating,
+        english,
+        checklist:
+          checklist.map((line) => line.text).join("\n") ||
+          "No parse is recorded for the words the student chose.",
+        versions: versionsForTutor(shown),
+      });
+      setNote(result.reply);
+    } catch (error) {
+      setNoteError(error instanceof ApiError ? error.message : "The tutor could not answer.");
+    } finally {
+      setNoteLoading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="card space-y-3">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <div className="font-semibold">Write what it says</div>
+          <p className="text-sm font-normal text-slate-600">
+            {canSelect
+              ? "Translate underlined words. Hover or tap a word to see its translation, morphology, and parse."
+              : "Tap a word to see its translation, morphology, and parse."}
+          </p>
+        </div>
+        {canSelect && (
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            <span>
+              {chosen.length} of {verse.words.length} words
+            </span>
+            <button
+              type="button"
+              className="underline"
+              onClick={() => {
+                onTranslateWordIds(verse.words.map((word) => word.id));
+                setNote(null);
+              }}
+            >
+              All
+            </button>
+            <button
+              type="button"
+              className="underline"
+              onClick={() => {
+                onTranslateWordIds([]);
+                setNote(null);
+              }}
+            >
+              None
+            </button>
+          </div>
+        )}
+        <div ref={wordRowRef} className="flex flex-wrap items-baseline gap-x-3 gap-y-3" dir="rtl">
+          {verse.words.map((word) => (
+            <TranslateWord
+              key={word.id}
+              word={word}
+              open={openWordId === word.id}
+              chosen={chosenIds.has(word.id)}
+              selectable={canSelect}
+              onChoose={() => toggleChosen(word.id)}
+              onToggle={() => setOpenWordId((current) => (current === word.id ? null : word.id))}
+            />
+          ))}
+        </div>
+        <textarea
+          ref={englishRef}
+          className="input w-full"
+          value={english}
+          onChange={(event) => onEnglish(event.target.value)}
+          placeholder="Your English"
+        />
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" className="btn" onClick={() => onShowCompare(true)}>
+            Compare
+          </button>
+          {VERSIONS.map((version) => {
+            const selected = selectedIds.includes(version.id);
+            const capped = !selected && selectedIds.length >= MAX_SELECTED_VERSIONS;
+            return (
+              <button
+                key={version.id}
+                type="button"
+                title={capped ? `${version.name}. Choose at most 5.` : version.name}
+                aria-pressed={selected}
+                disabled={capped}
+                className={`rounded-sm border px-2 py-1 text-xs ${
+                  selected
+                    ? "border-slate-900 bg-slate-900 text-white"
+                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                } disabled:opacity-40`}
+                onClick={() => setSelectedIds((current) => toggleVersion(current, version.id))}
+              >
+                {version.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {showCompare && (
+        <>
+          <div className="card space-y-2">
+            <div className="font-semibold">Tutor note</div>
+            <p className="text-sm text-slate-600">
+              Optional. Asks whether your English shows the checklist
+              {canSelect ? " for the words you chose" : ""}, and what their parse commits you to.
+            </p>
+            {noteLoading && <TutorWait />}
+            {noteError && <p className="text-sm text-red-700">{noteError}</p>}
+            {note && <TutorNote note={note} />}
+            {approved ? (
+              <button
+                type="button"
+                className="btn"
+                disabled={noteLoading || !hasVersion || !english.trim() || chosen.length === 0}
+                onClick={requestNote}
+              >
+                {noteLoading ? "Asking…" : "Ask about my English and the parse"}
+              </button>
+            ) : (
+              <button type="button" className="btn opacity-60" disabled>
+                {user?.status === "pending"
+                  ? "Waiting for approval"
+                  : user?.status === "denied"
+                    ? "Tutor notes are off for this account"
+                    : "Sign in to ask the tutor"}
+              </button>
+            )}
+          </div>
+          <div className="space-y-2">
+            {allSettled && !hasVersion && (
+              <p className="text-sm text-red-700">The English versions could not be loaded.</p>
+            )}
+            {shown
+              .filter((version) => version.status !== "missing")
+              .map((version) => (
+                <div key={version.id} className="card">
+                  <div className="flex flex-wrap items-baseline gap-x-2">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      {version.label}
+                    </span>
+                    <span className="text-xs text-slate-400">{version.name}</span>
+                  </div>
+                  {version.status === "ready" ? (
+                    <p className="mt-1">{version.text}</p>
+                  ) : (
+                    <p className="mt-1 text-sm text-slate-500">
+                      {version.status === "waiting" ? "Waiting on the rate limit…" : "Loading…"}
+                    </p>
+                  )}
+                </div>
+              ))}
+          </div>
+          <div className="card space-y-2">
+            <div className="font-semibold">What the parse commits you to</div>
+            {chosen.length === 0 ? (
+              <p className="text-sm text-slate-600">Select at least one word to translate.</p>
+            ) : checklist.length === 0 ? (
+              <p className="text-sm text-slate-600">
+                No parse is recorded for the words you chose.
+              </p>
+            ) : (
+              <ul className="text-sm space-y-1">
+                {checklist.map((line) => {
+                  // Keep the Hebrew word as one run so the comma stays after it in English order
+                  const surface = plainSurface(line.surface);
+                  const rest = line.text.startsWith(surface)
+                    ? line.text.slice(surface.length)
+                    : line.text;
+                  return (
+                    <li key={`${line.wordId}-${line.text}`}>
+                      <bdi className="font-hebrew">{surface}</bdi>
+                      {rest}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

@@ -1,503 +1,380 @@
-import type { Verse, Word, ParseFields } from "./types";
-
-// Hebrew morphology code decoder
-// Format: Position-based codes like "Ncfsa" (Noun, common, feminine, singular, absolute)
-// or "Vqp3ms" (Verb, qal, perfect, 3rd person, masculine, singular)
+import type { ParseFields, Verse, Word } from "./types";
+import { bookEntry, joinPrefixes, splitPrefixes } from "./utils";
 
 /**
- * Hebrew morphology code decoder
- * 
- * Comprehensive decoder for all Hebrew morphology codes from ETCBC/OpenScriptures
- * 
- * Format examples:
- * - Noun: N + type + gender + number + state (e.g., "Ncfsa" = common noun, fem, sing, abs)
- * - Verb: V + stem + tense/conjugation + person + gender + number (e.g., "Vqp3ms" = qal, perfect, 3rd, masc, sing)
- * - Adjective: A + gender + number + state (e.g., "Aamsa" = adjective, masc, sing, abs)
- * - Pronoun: P + type + person + gender + number (e.g., "Pp3ms" = personal pronoun, 3rd, masc, sing)
- * - Preposition: R (may have suffixes)
- * - Conjunction: C
- * - Adverb: D
- * - Particle: T + subtype (e.g., "Td" = definite article, "Ti" = interrogative, "Tn" = negative)
- * - Interjection: I
- * - Numeral: A (cardinal/ordinal)
- * 
- * Special prefixes (often separated by /):
- * - Hb = ב prefix (in/with)
- * - Hl = ל prefix (to/for)
- * - Hk = כ prefix (like/as)
- * - Hm = מ prefix (from)
- * - Hc = ו conjunction prefix (and)
- * - Hd = ה definite article prefix
- * - Hs = ש prefix (that/which)
- * 
- * Suffixes (e.g., Sp1cs):
- * - S = suffix
- * - p = pronominal
- * - person + gender + number (e.g., 1cs = 1st common singular, 3ms = 3rd masc singular)
+ * Open Scriptures Hebrew Bible morphology, served from this app's own assets.
+ *
+ * Each chapter file holds `verses[] → words[] → [surface, strongs, morph]`, for example
+ * `["בְּ/רֵאשִׁ֖ית", "Hb/H7225", "R/Ncfsa"]`. The "/" in all three strings separates the
+ * morphemes OSHB tagged: prefixes first, then the main word, then any suffix.
+ *
+ * Codes (see hebrewMorphCodes.html for the full table):
+ * - Noun: N + type + gender + number + state ("Ncfsa")
+ * - Verb, finite: V + stem + tense + person + gender + number ("Vqp3ms")
+ * - Verb, participle: V + stem + r|s + gender + number + state ("Vqrmsa")
+ * - Verb, infinitive: V + stem + a|c ("Vqc")
+ * - Adjective / numeral: A + a|c|o|g + gender + number + state ("Aamsa")
+ * - Pronoun: P + type + person + gender + number ("Pp3ms")
+ * - Preposition R (Rd = with the article), conjunction C, adverb D, interjection I
+ * - Particle: T + type ("Td" article, "Ti" interrogative, "Tn" negative, "Tr" relative, "To" object marker)
+ * - Suffix: S + p + person + gender + number ("Sp3ms"), or Sd / Sh / Sn
+ * - A leading "A" on a part marks Aramaic ("AVqp3ms"); Hebrew parts carry no language letter.
+ *
+ * Which parts are prefixes is decided by the Strong's string: "Hb Hl Hk Hm Hc Hd Hs Hi" name
+ * the prefix, and the morph part beside it only says how OSHB tagged it ("R", "Rd", "C", "Td", "Ti").
  */
-function decodeHebrewMorphology(code: string): Partial<ParseFields> {
-  const fields: Partial<ParseFields> = {};
-  
-  if (!code || code.length === 0) return fields;
-  
-  const firstChar = code[0].toUpperCase();
-  
-  // Handle special prefix codes (H + letter)
-  if (firstChar === 'H' && code.length >= 2) {
-    const prefixType = code[1];
-    let prefix: string | undefined;
-    switch (prefixType) {
-      case 'b': prefix = 'ב (in/with)'; break;
-      case 'l': prefix = 'ל (to/for)'; break;
-      case 'k': prefix = 'כ (like/as)'; break;
-      case 'm': prefix = 'מ (from)'; break;
-      case 'c': prefix = 'ו (and)'; break;
-      case 'd': prefix = 'ה (the)'; break;
-      case 's': prefix = 'ש (that/which)'; break;
-      case 'i': prefix = 'interrogative ה'; break;
-    }
-    if (prefix) {
-      fields.prefix = [prefix];
-    }
-    // These are just prefixes, not the main word
-    return fields;
-  }
-  
-  // Handle suffix codes (S + type + person/gender/number)
-  if (firstChar === 'S') {
-    if (code.length >= 2) {
-      const suffixType = code[1];
-      if (suffixType === 'p') {
-        fields.suffix = 'pronominal suffix';
-        // Parse person/gender/number from remaining characters
-        if (code.length >= 4) {
-          const person = code[2];
-          if (person === '1') fields.suffixPerson = 'first';
-          else if (person === '2') fields.suffixPerson = 'second';
-          else if (person === '3') fields.suffixPerson = 'third';
-          
-          const gender = code[3];
-          if (gender === 'm') fields.suffixGender = 'masculine';
-          else if (gender === 'f') fields.suffixGender = 'feminine';
-          else if (gender === 'c' || gender === 'b') fields.suffixGender = 'common';
-          
-          if (code.length >= 5) {
-            const number = code[4];
-            if (number === 's') fields.suffixNumber = 'singular';
-            else if (number === 'p') fields.suffixNumber = 'plural';
-            else if (number === 'd') fields.suffixNumber = 'dual';
-          }
-        }
-      } else if (suffixType === 'd') {
-        fields.suffix = 'directional he';
-      } else if (suffixType === 'h') {
-        fields.suffix = 'paragogic he';
-      } else if (suffixType === 'n') {
-        fields.suffix = 'paragogic nun';
-      }
-    }
-    return fields;
-  }
-  
-  // Part of Speech (first character)
-  switch (firstChar) {
-    case 'N': // Noun
-      if (code.length >= 2) {
-        const nounType = code[1];
-        if (nounType === 'c') fields.pos = 'noun (common)';
-        else if (nounType === 'p') fields.pos = 'noun (proper)';
-        else if (nounType === 'g') fields.pos = 'noun (gentilic)';
-        else fields.pos = 'noun (common)'; // Default to common if subtype unclear
-      } else {
-        fields.pos = 'noun (common)'; // Default to common if no subtype specified
-      }
-      
-      if (code.length >= 5) {
-        // Position 2: gender (m=masc, f=fem, b=both/common, c=common)
-        const gender = code[2];
-        if (gender === 'm') fields.gender = 'masculine';
-        else if (gender === 'f') fields.gender = 'feminine';
-        else if (gender === 'b' || gender === 'c') fields.gender = 'common';
-        
-        // Position 3: number (s=singular, p=plural, d=dual)
-        const number = code[3];
-        if (number === 's') fields.number = 'singular';
-        else if (number === 'p') fields.number = 'plural';
-        else if (number === 'd') fields.number = 'dual';
-        
-        // Position 4: state (a=absolute, c=construct, d=determined)
-        const state = code[4];
-        if (state === 'a') fields.state = 'absolute';
-        else if (state === 'c') fields.state = 'construct';
-        else if (state === 'd') fields.state = 'determined';
-      }
-      break;
-      
-    case 'V': // Verb
-      fields.pos = 'verb';
-      if (code.length >= 2) {
-        // Position 1: stem/binyan
-        // Common stems kept, rare stems (<10 occurrences) mapped to "other (rare)"
-        const stem = code[1];
-        if (stem === 'q') fields.stem = 'qal';
-        else if (stem === 'N' || stem === 'n') fields.stem = 'niphal';
-        else if (stem === 'p') fields.stem = 'piel';
-        else if (stem === 'P') fields.stem = 'pual';
-        else if (stem === 'h') fields.stem = 'hiphil';
-        else if (stem === 'H') fields.stem = 'hophal';
-        else if (stem === 't') fields.stem = 'hithpael';
-        else if (stem === 'o') fields.stem = 'polel';
-        else if (stem === 'r') fields.stem = 'hithpolel';
-        else if (stem === 'm') fields.stem = 'poel';
-        else if (stem === 'Q') fields.stem = 'qal passive';
-        else if (stem === 'l') fields.stem = 'pilpel';
-        // Rare stems (< 10 occurrences in sample): O, K, D, u, k, M, j, L, z, f, i, c, v, w, y
-        else if (['O', 'K', 'D', 'u', 'k', 'M', 'j', 'L', 'z', 'f', 'i', 'c', 'v', 'w', 'y'].includes(stem)) {
-          fields.stem = 'other (rare)';
-        }
-      }
-      if (code.length >= 3) {
-        // Position 2: tense/conjugation
-        const tense = code[2];
-        if (tense === 'p') fields.tense = 'perfect (qatal)';
-        else if (tense === 'q') fields.tense = 'sequential perfect';
-        else if (tense === 'i') fields.tense = 'imperfect (yiqtol)';
-        else if (tense === 'w') fields.tense = 'sequential imperfect';
-        else if (tense === 'h') fields.tense = 'cohortative';
-        else if (tense === 'j') fields.tense = 'jussive';
-        else if (tense === 'v') fields.tense = 'imperative';
-        else if (tense === 'r') fields.tense = 'participle active';
-        else if (tense === 's') fields.tense = 'participle passive';
-        else if (tense === 'a') fields.tense = 'infinitive absolute';
-        else if (tense === 'c') fields.tense = 'infinitive construct';
-      }
-      if (code.length >= 4 && !['a', 'c'].includes(code[2])) {
-        // Position 3: person (1/2/3) - not for infinitives
-        const person = code[3];
-        if (person === '1') fields.person = 'first';
-        else if (person === '2') fields.person = 'second';
-        else if (person === '3') fields.person = 'third';
-      }
-      if (code.length >= 5) {
-        // Position 4: gender (m/f/b/c)
-        const gender = code[4];
-        if (gender === 'm') fields.gender = 'masculine';
-        else if (gender === 'f') fields.gender = 'feminine';
-        else if (gender === 'b' || gender === 'c') fields.gender = 'common';
-      }
-      if (code.length >= 6) {
-        // Position 5: number (s/p/d)
-        const number = code[5];
-        if (number === 's') fields.number = 'singular';
-        else if (number === 'p') fields.number = 'plural';
-        else if (number === 'd') fields.number = 'dual';
-      }
-      break;
-      
-    case 'A': // Adjective or Numeral
-      if (code.length >= 2) {
-        const subtype = code[1];
-        if (subtype === 'a') {
-          fields.pos = 'adjective';
-          // Position 2: gender
-          if (code.length >= 3) {
-            const gender = code[2];
-            if (gender === 'm') fields.gender = 'masculine';
-            else if (gender === 'f') fields.gender = 'feminine';
-            else if (gender === 'b' || gender === 'c') fields.gender = 'common';
-          }
-          // Position 3: number
-          if (code.length >= 4) {
-            const number = code[3];
-            if (number === 's') fields.number = 'singular';
-            else if (number === 'p') fields.number = 'plural';
-            else if (number === 'd') fields.number = 'dual';
-          }
-          // Position 4: state
-          if (code.length >= 5) {
-            const state = code[4];
-            if (state === 'a') fields.state = 'absolute';
-            else if (state === 'c') fields.state = 'construct';
-            else if (state === 'd') fields.state = 'determined';
-          }
-        } else if (subtype === 'c' || subtype === 'o') {
-          fields.pos = 'numeral';
-          fields.numeralType = subtype === 'c' ? 'cardinal' : 'ordinal';
-          // Similar structure to adjectives for gender/number/state
-          if (code.length >= 3) {
-            const gender = code[2];
-            if (gender === 'm') fields.gender = 'masculine';
-            else if (gender === 'f') fields.gender = 'feminine';
-            else if (gender === 'b' || gender === 'c') fields.gender = 'common';
-          }
-          if (code.length >= 4) {
-            const number = code[3];
-            if (number === 's') fields.number = 'singular';
-            else if (number === 'p') fields.number = 'plural';
-            else if (number === 'd') fields.number = 'dual';
-          }
-          if (code.length >= 5) {
-            const state = code[4];
-            if (state === 'a') fields.state = 'absolute';
-            else if (state === 'c') fields.state = 'construct';
-            else if (state === 'd') fields.state = 'determined';
-          }
-        }
-      } else {
-        fields.pos = 'adjective';
-      }
-      break;
-      
-    case 'R': // Preposition
-      fields.pos = 'preposition';
-      break;
-      
-    case 'P': // Pronoun
-      if (code.length >= 2) {
-        const pronounType = code[1];
-        if (pronounType === 'p') {
-          fields.pos = 'pronoun';
-          fields.pronounType = 'personal';
-        } else if (pronounType === 'd') {
-          fields.pos = 'pronoun';
-          fields.pronounType = 'demonstrative';
-        } else if (pronounType === 'i') {
-          fields.pos = 'pronoun';
-          fields.pronounType = 'interrogative';
-        } else if (pronounType === 'f') {
-          fields.pos = 'pronoun';
-          fields.pronounType = 'indefinite';
-        } else {
-          fields.pos = 'pronoun';
-        }
-        
-        // Parse person, gender, number if present
-        if (code.length >= 4) {
-          const person = code[2];
-          if (person === '1') fields.person = 'first';
-          else if (person === '2') fields.person = 'second';
-          else if (person === '3') fields.person = 'third';
-          
-          const gender = code[3];
-          if (gender === 'm') fields.gender = 'masculine';
-          else if (gender === 'f') fields.gender = 'feminine';
-          else if (gender === 'b' || gender === 'c') fields.gender = 'common';
-          
-          if (code.length >= 5) {
-            const number = code[4];
-            if (number === 's') fields.number = 'singular';
-            else if (number === 'p') fields.number = 'plural';
-            else if (number === 'd') fields.number = 'dual';
-          }
-        }
-      } else {
-        fields.pos = 'pronoun';
-      }
-      break;
-      
-    case 'C': // Conjunction
-      fields.pos = 'conjunction';
-      break;
-      
-    case 'D': // Adverb
-      fields.pos = 'adverb';
-      break;
-      
-    case 'T': // Particle
-      fields.pos = 'particle';
-      if (code.length >= 2) {
-        const particleType = code[1];
-        if (particleType === 'd') {
-          fields.particleType = 'definite article';
-        } else if (particleType === 'i') {
-          fields.particleType = 'interrogative';
-        } else if (particleType === 'n') {
-          fields.particleType = 'negative';
-        } else if (particleType === 'r') {
-          fields.particleType = 'relative';
-        } else if (particleType === 'a') {
-          fields.particleType = 'affirmation';
-        } else if (particleType === 'o') {
-          fields.particleType = 'direct object marker';
-        } else if (particleType === 'm') {
-          fields.particleType = 'demonstrative';
-        } else if (particleType === 'e') {
-          fields.particleType = 'exhortation';
-        } else if (particleType === 'j') {
-          fields.particleType = 'interjection';
-        }
-      }
-      break;
-      
-    case 'I': // Interjection
-      fields.pos = 'interjection';
-      break;
-      
-    default:
-      // Unknown - leave fields minimal
-      break;
-  }
-  
-  return fields;
+
+const HEBREW_STEMS: Record<string, string> = {
+  q: "qal",
+  N: "niphal",
+  p: "piel",
+  P: "pual",
+  h: "hiphil",
+  H: "hophal",
+  t: "hithpael",
+  o: "polel",
+  r: "hithpolel",
+  m: "poel",
+  Q: "qal passive",
+  l: "pilpel",
+};
+
+const ARAMAIC_STEMS: Record<string, string> = {
+  q: "peal",
+  Q: "peil",
+  p: "pael",
+  h: "haphel",
+  a: "aphel",
+  u: "hithpeel",
+  M: "hithpaal",
+  H: "hophal",
+  o: "polel",
+  r: "hithpolel",
+  m: "poel",
+};
+
+const TENSES: Record<string, string> = {
+  p: "perfect (qatal)",
+  q: "sequential perfect",
+  i: "imperfect (yiqtol)",
+  w: "sequential imperfect",
+  h: "cohortative",
+  j: "jussive",
+  v: "imperative",
+  r: "participle active",
+  s: "participle passive",
+  a: "infinitive absolute",
+  c: "infinitive construct",
+};
+
+const PERSON: Record<string, string> = { "1": "first", "2": "second", "3": "third" };
+const GENDER: Record<string, string> = { m: "masculine", f: "feminine", b: "common", c: "common" };
+const NUMBER: Record<string, string> = { s: "singular", p: "plural", d: "dual" };
+const STATE: Record<string, string> = { a: "absolute", c: "construct", d: "determined" };
+
+/** Strong's prefix markers → the drill's prefix labels */
+const PREFIX_BY_STRONGS: Record<string, string> = {
+  Hb: "ב (in/with)",
+  Hl: "ל (to/for)",
+  Hk: "כ (like/as)",
+  Hm: "מ (from)",
+  Hc: "ו (and)",
+  Hd: "ה (the)",
+  Hs: "ש (that/which)",
+  Hi: "interrogative ה",
+};
+
+const PRONOUN_TYPES: Record<string, string> = {
+  p: "personal",
+  d: "demonstrative",
+  i: "interrogative",
+  f: "indefinite",
+  r: "relative",
+};
+
+const PARTICLE_TYPES: Record<string, string> = {
+  d: "definite article",
+  i: "interrogative",
+  n: "negative",
+  r: "relative",
+  a: "affirmation",
+  o: "direct object marker",
+  m: "demonstrative",
+  e: "exhortation",
+  j: "interjection",
+};
+
+const LANGUAGE_SPLIT = /^(A?)([A-Z].*)$/;
+
+function nominal(fields: Partial<ParseFields>, code: string, from: number) {
+  const gender = GENDER[code[from]];
+  const number = NUMBER[code[from + 1]];
+  const state = STATE[code[from + 2]];
+  if (gender) fields.gender = gender;
+  if (number) fields.number = number;
+  if (state) fields.state = state;
 }
 
 /**
- * Parse a verse reference like "Genesis 1:1" or "Obadiah 1:15"
- * Returns [bookFile, chapterIndex, verseIndex] or null if invalid
+ * Decode one morph part. `Hx` prefix markers and `S…` suffixes decode too, so a part can
+ * be read on its own; `decodeWord` decides which parts are prefixes.
  */
-function parseVerseRef(ref: string): [string, number, number] | null {
-  // Match patterns like "Genesis 1:1" or "1 Samuel 3:4"
-  const match = ref.match(/^(.+?)\s+(\d+):(\d+)$/);
+export function decodeHebrewMorphology(code: string): Partial<ParseFields> {
+  const fields: Partial<ParseFields> = {};
+  if (!code) return fields;
+
+  // Strong's-style prefix markers (Hb, Hl, …) sometimes show up as morph codes too
+  if (/^H[a-z]$/.test(code)) {
+    const prefix = PREFIX_BY_STRONGS[code];
+    if (prefix) fields.prefix = [prefix];
+    return fields;
+  }
+
+  const split = LANGUAGE_SPLIT.exec(code);
+  if (!split) return fields;
+  const aramaic = split[1] === "A";
+  const core = split[2];
+  const kind = core[0];
+
+  switch (kind) {
+    case "S": {
+      const type = core[1];
+      if (type === "p") {
+        fields.suffix = "pronominal suffix";
+        const person = PERSON[core[2]];
+        const gender = GENDER[core[3]];
+        const number = NUMBER[core[4]];
+        if (person) fields.suffixPerson = person;
+        if (gender) fields.suffixGender = gender;
+        if (number) fields.suffixNumber = number;
+      } else if (type === "d") fields.suffix = "directional he";
+      else if (type === "h") fields.suffix = "paragogic he";
+      else if (type === "n") fields.suffix = "paragogic nun";
+      return fields;
+    }
+    case "N": {
+      const type = core[1];
+      fields.pos =
+        type === "p" ? "noun (proper)" : type === "g" ? "noun (gentilic)" : "noun (common)";
+      fields.nounType = type === "p" ? "proper" : type === "g" ? "gentilic" : "common";
+      nominal(fields, core, 2);
+      return fields;
+    }
+    case "V": {
+      fields.pos = "verb";
+      const stem = (aramaic ? ARAMAIC_STEMS : HEBREW_STEMS)[core[1]];
+      fields.stem = stem ?? (core.length > 1 ? "other (rare)" : undefined);
+      const tense = TENSES[core[2]];
+      if (tense) fields.tense = tense;
+      const tenseCode = core[2];
+      if (tenseCode === "r" || tenseCode === "s") {
+        // Participles agree like nominals: gender, number, state. No person.
+        nominal(fields, core, 3);
+      } else if (tenseCode !== "a" && tenseCode !== "c") {
+        // Finite forms: person, gender, number
+        const person = PERSON[core[3]];
+        const gender = GENDER[core[4]];
+        const number = NUMBER[core[5]];
+        if (person) fields.person = person;
+        if (gender) fields.gender = gender;
+        if (number) fields.number = number;
+      }
+      return fields;
+    }
+    case "A": {
+      const type = core[1];
+      if (type === "c" || type === "o") {
+        fields.pos = "numeral";
+        fields.numeralType = type === "c" ? "cardinal" : "ordinal";
+      } else {
+        fields.pos = "adjective";
+        if (type === "g") fields.adjectiveType = "gentilic";
+      }
+      nominal(fields, core, 2);
+      return fields;
+    }
+    case "P": {
+      fields.pos = "pronoun";
+      const type = PRONOUN_TYPES[core[1]];
+      if (type) fields.pronounType = type;
+      const person = PERSON[core[2]];
+      const gender = GENDER[core[3]];
+      const number = NUMBER[core[4]];
+      if (person) fields.person = person;
+      if (gender) fields.gender = gender;
+      if (number) fields.number = number;
+      return fields;
+    }
+    case "R":
+      fields.pos = "preposition";
+      if (core[1] === "d") fields.particleType = "definite article";
+      return fields;
+    case "C":
+      fields.pos = "conjunction";
+      return fields;
+    case "D":
+      fields.pos = "adverb";
+      return fields;
+    case "T": {
+      fields.pos = "particle";
+      const type = PARTICLE_TYPES[core[1]];
+      if (type) fields.particleType = type;
+      return fields;
+    }
+    case "I":
+      fields.pos = "interjection";
+      return fields;
+    default:
+      return fields;
+  }
+}
+
+export type RawWord = [surface: string, strongs: string, morph: string];
+
+const MAIN_STRONGS = /^H\d+/;
+
+/** One OSHB record → the gold parse the drill grades against. */
+export function decodeWord(raw: RawWord, id: string): Word {
+  const [surface, strongs, morphCode] = raw;
+  const morphParts = morphCode.split("/");
+  const strongsParts = strongs.split("/");
+
+  const parse: Partial<ParseFields> = {};
+  const prefixes: string[] = [];
+  let lemma: string | undefined;
+  let sawMain = false;
+
+  for (let i = 0; i < morphParts.length; i++) {
+    const part = morphParts[i];
+    if (!part) continue;
+    const strong = strongsParts[i] ?? "";
+    const prefix = PREFIX_BY_STRONGS[strong];
+
+    // "לְ/ךָ" is Hl + "R/Sp2ms": a preposition carrying a suffix, not a prefix on nothing.
+    const restIsSuffix = morphParts.slice(i + 1).every((rest) => /^A?S/.test(rest));
+    if (prefix && !sawMain && i < morphParts.length - 1 && !restIsSuffix) {
+      // A prefix. "Rd" is a preposition that has swallowed the article: two prefixes in one part.
+      prefixes.push(prefix);
+      if (/^A?Rd$/.test(part) && prefix !== "ה (the)") prefixes.push("ה (the)");
+      continue;
+    }
+
+    const decoded = decodeHebrewMorphology(part);
+    if (decoded.suffix) {
+      // Suffix parts have no Strong's entry; they come after the main word
+      Object.assign(parse, decoded);
+      continue;
+    }
+    if (sawMain && /^A?T[a-z]$/.test(part)) {
+      // Aramaic emphatic ending tagged as a trailing article ("ANcmsd/Td"). The state already says determined.
+      continue;
+    }
+    if (decoded.prefix && !decoded.pos) {
+      prefixes.push(...decoded.prefix);
+      continue;
+    }
+    Object.assign(parse, decoded);
+    if (decoded.pos) {
+      sawMain = true;
+      if (!lemma && MAIN_STRONGS.test(strong)) lemma = strong.match(MAIN_STRONGS)?.[0];
+    }
+  }
+
+  if (!lemma) {
+    lemma = strongsParts.map((part) => part.match(MAIN_STRONGS)?.[0]).find(Boolean);
+  }
+
+  const joined = joinPrefixes(prefixes);
+  if (joined) parse.prefix = splitPrefixes(joined);
+
+  return {
+    surface,
+    lemma,
+    strongs,
+    parse,
+    id,
+    afterSpace: true,
+  };
+}
+
+/**
+ * Parse a verse reference like "Genesis 1:1", "Gen 1:1", or "1 Samuel 3:4"
+ * Returns the book's data filename, display name, and 1-based chapter and verse, or null if invalid
+ */
+export function parseVerseRef(
+  ref: string
+): { filename: string; name: string; chapter: number; verse: number } | null {
+  const match = ref.trim().match(/^(.+?)\s+(\d+)[:.](\d+)$/);
   if (!match) return null;
-  
-  const bookName = match[1].trim();
-  const chapter = parseInt(match[2], 10);
-  const verse = parseInt(match[3], 10);
-  
-  if (isNaN(chapter) || isNaN(verse) || chapter < 1 || verse < 1) {
+  const book = bookEntry(match[1]);
+  const chapter = Number.parseInt(match[2], 10);
+  const verse = Number.parseInt(match[3], 10);
+  if (!book || Number.isNaN(chapter) || Number.isNaN(verse) || chapter < 1 || verse < 1) {
     return null;
   }
-  
-  return [bookName, chapter - 1, verse - 1]; // Convert to 0-indexed
+  return { filename: book.filename, name: book.name, chapter, verse };
 }
 
-// GitHub repository URL for Hebrew data files
-const GITHUB_DATA_BASE_URL = 'https://raw.githubusercontent.com/shininglegend/hebrew-parsing-practice/refs/heads/main/hebrew-data/bible-books';
+/** Served from public/ by Vite in dev and as Worker assets in production */
+const DATA_BASE = "/hebrew-data/bible-books";
 
 // Cache for loaded chapter data to avoid repeated fetches
-const chapterCache: Record<string, unknown> = {};
+const chapterCache = new Map<string, Promise<unknown>>();
 
-/**
- * Load a chapter's data from GitHub (with caching)
- */
-async function loadChapterData(bookFile: string, chapterNum: number): Promise<unknown> {
-  const cacheKey = `${bookFile}-${chapterNum}`;
-  
-  // Check cache first
-  if (chapterCache[cacheKey]) {
-    return chapterCache[cacheKey];
-  }
-  
-  // Fetch from GitHub
-  const url = `${GITHUB_DATA_BASE_URL}/${bookFile}/chapter_${chapterNum}.json`;
+async function fetchChapter(filename: string, chapter: number, name: string): Promise<unknown> {
+  const url = `${DATA_BASE}/${filename}/chapter_${chapter}.json`;
   const response = await fetch(url);
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${bookFile} chapter ${chapterNum} from GitHub: ${response.status} ${response.statusText}`);
+  // The Worker answers unknown paths with index.html for the SPA, so a missing chapter is a 200 of HTML
+  const type = response.headers.get("content-type") ?? "";
+  if (!response.ok || !type.includes("json")) {
+    throw new Error(`${name} ${chapter} is not in the data.`);
   }
-  
-  const data = await response.json();
-  
-  // Cache the data
-  chapterCache[cacheKey] = data;
-  
-  return data;
+  return response.json();
+}
+
+function loadChapterData(filename: string, chapter: number, name: string): Promise<unknown> {
+  const cacheKey = `${filename}-${chapter}`;
+  let pending = chapterCache.get(cacheKey);
+  if (!pending) {
+    pending = fetchChapter(filename, chapter, name).catch((error) => {
+      chapterCache.delete(cacheKey);
+      throw error;
+    });
+    chapterCache.set(cacheKey, pending);
+  }
+  return pending;
 }
 
 /**
  * Load a verse from the Hebrew Bible data files
  * @param ref Verse reference in format "Book Chapter:Verse" (e.g., "Genesis 1:1", "Obadiah 1:15")
- * @returns Promise<Verse> with parsed Hebrew words
  */
 export async function loadVerse(ref: string): Promise<Verse> {
   const parsed = parseVerseRef(ref);
   if (!parsed) {
     throw new Error(`Invalid verse reference: ${ref}`);
   }
-  
-  const [bookFile, chapterIdx, verseIdx] = parsed;
-  const chapterNum = chapterIdx + 1; // Convert from 0-indexed to 1-indexed for filename
-  
-  try {
-    // Load the chapter data from GitHub
-    const chapterData = await loadChapterData(bookFile, chapterNum);
-    
-    const verses = chapterData as unknown[];
-    
-    // Validate verse index
-    if (!Array.isArray(verses) || verseIdx >= verses.length) {
-      throw new Error(`Verse ${verseIdx + 1} not found in ${bookFile} chapter ${chapterNum}`);
-    }
-    
-    const verseData = verses[verseIdx];
-    if (!Array.isArray(verseData)) {
-      throw new Error(`Invalid verse data for ${ref}`);
-    }
-    
-    // Parse words from the verse data
-    // Format: [[surface, strongs, morphology], ...]
-    const words: Word[] = [];
-    
-    verseData.forEach((wordData: string[], wordIdx: number) => {
-      if (!Array.isArray(wordData) || wordData.length < 3) return;
-      
-      const [surface, strongs, morphCode] = wordData;
-      
-      // Check if this is a compound word (prefix/suffix attached with /)
-      const morphParts = morphCode.split('/');
-      const strongsParts = strongs.split('/');
-      
-      // Decode all morphology parts and merge them
-      const parsedFields: Partial<ParseFields> = {};
-      const prefixes: string[] = [];
-      
-      for (let i = 0; i < morphParts.length; i++) {
-        const part = morphParts[i];
-        if (!part || part.length === 0) continue;
-        
-        const decoded = decodeHebrewMorphology(part);
-        
-        // Special case: Some morphology codes represent prefixes when they appear
-        // in compound forms (e.g., "C/R" where C is the ו prefix, not standalone conjunction)
-        // Check if the corresponding Strong's code is a prefix marker (Hx format)
-        const correspondingStrong = strongsParts[i] || '';
-        const isStrongPrefix = correspondingStrong.match(/^H[bklmcdsi]$/i);
-        
-        if (isStrongPrefix && i < morphParts.length - 1) {
-          // This morphology part represents a prefix, decode it as such
-          if (part === 'C') {
-            prefixes.push('ו (and)');
-          } else if (part === 'R') {
-            // Preposition prefix - determine which one from Strong's
-            if (correspondingStrong === 'Hb') prefixes.push('ב (in/with)');
-            else if (correspondingStrong === 'Hl') prefixes.push('ל (to/for)');
-            else if (correspondingStrong === 'Hk') prefixes.push('כ (like/as)');
-            else if (correspondingStrong === 'Hm') prefixes.push('מ (from)');
-          } else if (part.startsWith('T')) {
-            // Article prefix
-            prefixes.push('ה (the)');
-          }
-          // Don't merge POS for prefix parts
-        } else {
-          // Regular word part - merge all fields
-          Object.assign(parsedFields, decoded);
-        }
-      }
-      
-      // Add prefixes array if any were found
-      if (prefixes.length > 0) {
-        parsedFields.prefix = prefixes;
-      }
-      
-      // Create a single word with combined morphology
-      words.push({
-        surface,
-        lemma: strongs,
-        parse: parsedFields,
-        id: `${bookFile}-${chapterNum}-${verseIdx + 1}-${wordIdx}`,
-        afterSpace: true
-      });
-    });
-    
-    return {
-      ref,
-      words
-    };
-    
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to load ${ref}: ${error.message}`);
-    }
-    throw error;
+  const { filename, name, chapter, verse } = parsed;
+  const chapterData = await loadChapterData(filename, chapter, name);
+  const verses = chapterData as unknown[];
+
+  if (!Array.isArray(verses) || verses.length === 0) {
+    throw new Error(`${name} ${chapter} is not in the data.`);
   }
+  if (verse > verses.length) {
+    throw new Error(`${name} ${chapter} has ${verses.length} verses.`);
+  }
+  const verseData = verses[verse - 1];
+  if (!Array.isArray(verseData)) {
+    throw new Error(`Invalid verse data for ${ref}`);
+  }
+
+  const words: Word[] = [];
+  verseData.forEach((wordData: unknown, index: number) => {
+    if (!Array.isArray(wordData) || wordData.length < 3) return;
+    const raw = wordData as RawWord;
+    words.push(decodeWord(raw, `${filename}-${chapter}-${verse}-${index}`));
+  });
+
+  return { ref: `${name} ${chapter}:${verse}`, words };
 }

@@ -1,0 +1,13 @@
+strongs-hebrew.json is derived from "A Concise Dictionary of the Words in the Hebrew Bible
+with their Renderings in the King James Version" by James Strong, LL.D., S.T.D. (1894),
+in the JSON edition published by Open Scriptures:
+
+  https://github.com/openscriptures/strongs  (hebrew/strongs-hebrew-dictionary.js)
+
+JSON version Copyright 2010, Open Scriptures. CC-BY-SA.
+Editing, corrections and Unicode transliterations by David Troidl.
+The XML e-text came from a source by David Instone-Brewer (www.2LetterLookup.com).
+
+This copy keeps only the lemma, transliteration, pronunciation, derivation, Strong's
+definition, and KJV renderings for each entry. Regenerate it with the one-off script in
+README.md ("Static data").
