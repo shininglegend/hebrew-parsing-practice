@@ -1,0 +1,14 @@
+tbesh-glosses.json is the Gloss column of the Translators Brief lexicon of Extended Strongs
+for Hebrew (TBESH), created by www.STEPBible.org based on work at Tyndale House Cambridge,
+licensed CC BY 4.0:
+
+  https://github.com/STEPBible/STEPBible-Data  (Lexicons/TBESH ...txt)
+  https://creativecommons.org/licenses/by/4.0/
+
+Changes from the source: Strong's numbers are written without zero padding to match the
+Open Scriptures Hebrew Bible (H0430 -> H430). Where TBESH gives several rows for one number,
+the common word (dStrong suffix G, or the unsuffixed row) is kept and names and compounds
+sharing the number are dropped. Where TBESH splits a number into BDB homonyms (H7652a,
+H7652b) and the text does not, the first split also answers for the plain number. The
+Meaning column (abridged BDB, © Online Bible) is not included. Please take the data from
+github.com/STEPBible rather than from this copy; scripts/build-glosses.mjs regenerates it.

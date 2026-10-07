@@ -7,7 +7,11 @@ export function Footer() {
         <a className="text-blue-500" href="https://github.com/openscriptures/morphhb">
           Open Scriptures Hebrew Bible
         </a>
-        . Glosses from Strong's Hebrew dictionary, in the{" "}
+        . Glosses from the{" "}
+        <a className="text-blue-500" href="https://github.com/STEPBible/STEPBible-Data">
+          Tyndale Brief lexicon (TBESH)
+        </a>{" "}
+        by STEPBible.org (CC BY 4.0); full definitions from Strong's Hebrew dictionary, in the{" "}
         <a className="text-blue-500" href="https://github.com/openscriptures/strongs">
           Open Scriptures edition
         </a>{" "}

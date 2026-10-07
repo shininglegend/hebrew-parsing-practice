@@ -47,7 +47,8 @@ Biome handles both linting and formatting. TypeScript 7 dropped the JavaScript c
 Everything the parser reads ships with the app from `public/`, so a preview branch sees its own data and nothing depends on GitHub at runtime:
 
 - `public/hebrew-data/bible-books/{book}/chapter_{N}.json` is the Open Scriptures Hebrew Bible morphology, one file per chapter, in English chapter and verse numbering. Each word is `[surface, strongs, morph]`, for example `["בְּ/רֵאשִׁ֖ית", "Hb/H7225", "R/Ncfsa"]`. The `/` separates the morphemes OSHB tagged. `hebrewMorphCodes.html` documents the codes; `src/api.ts` decodes them.
-- `public/lexicon/strongs-hebrew.json` is Strong's Hebrew dictionary in the Open Scriptures edition (CC-BY-SA, see `public/lexicon/LICENSE-strongs.txt`), trimmed to the fields the app shows. To regenerate it:
+- `public/lexicon/tbesh-glosses.json` is the brief gloss shown under each word: the Gloss column of the Translators Brief lexicon of Extended Strongs for Hebrew (TBESH) from STEPBible.org (CC BY 4.0, see `public/lexicon/LICENSE-tbesh.txt`), keyed by Strong's number. Strong's own KJV lists are alphabetical, so taking their first word gives "angels" for אֱלֹהִים; TBESH gives one curated gloss per number. `npm run build:glosses` downloads the current TBESH and rebuilds the file (`node scripts/build-glosses.mjs path/to/tbesh.txt` works from a local copy).
+- `public/lexicon/strongs-hebrew.json` is Strong's Hebrew dictionary in the Open Scriptures edition (CC-BY-SA, see `public/lexicon/LICENSE-strongs.txt`), trimmed to the fields the app shows. It is the full definition popup, and the brief fallback for any number TBESH lacks. To regenerate it:
 
 ```bash
 curl -sSo /tmp/strongs.js https://raw.githubusercontent.com/openscriptures/strongs/master/hebrew/strongs-hebrew-dictionary.js
@@ -210,11 +211,11 @@ Things that differ on purpose, so a cherry-pick that touches them needs a look:
 - `src/App.tsx` - Routes for study, reverse parsing, weak spots, and admin
 - `src/api.ts` - OSHB chapter loading and the morphology decoder
 - `src/signals.ts` - Cues and explanations for misses
-- `src/lexicon.ts` - Strong's glosses
+- `src/lexicon.ts` - TBESH glosses and Strong's definitions
 - `worker/` - Session, tutor, and admin API
 - `src/types.ts` - TypeScript definitions for words, verses, and parse fields
 - `src/utils.ts` - Field specs, scoring, book list, prefix helpers
 
 ## Data Sources
 
-Morphology is from the [Open Scriptures Hebrew Bible](https://github.com/openscriptures/morphhb). If a parse is wrong, open an issue there. Glosses are from Strong's Hebrew dictionary in the [Open Scriptures edition](https://github.com/openscriptures/strongs) (CC-BY-SA). English versions come from [bible-api.com](https://bible-api.com).
+Morphology is from the [Open Scriptures Hebrew Bible](https://github.com/openscriptures/morphhb). If a parse is wrong, open an issue there. Brief glosses are from the [Translators Brief lexicon of Extended Strongs for Hebrew](https://github.com/STEPBible/STEPBible-Data) by STEPBible.org and Tyndale House (CC BY 4.0). Full definitions are from Strong's Hebrew dictionary in the [Open Scriptures edition](https://github.com/openscriptures/strongs) (CC-BY-SA). English versions come from [bible-api.com](https://bible-api.com).
