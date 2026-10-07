@@ -17,10 +17,10 @@
   "vars": {
     "AI_MODEL": "anthropic/claude-haiku-4.5",
     "AI_TRANSLATION_MODEL": "anthropic/claude-opus-5.5",
-    "AI_GATEWAY_ID": "hebrewparser",
+    "AI_GATEWAY_ID": "greekparser",
     "ADMIN_EMAILS": ["jvctext@gmail.com"],
     "EMAIL_FROM": "accounts@hebrew.titusmurphy.com",
-    "TURNSTILE_SITE_KEY": ""
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFAH8JAA0hXpKQry"
   },
   "routes": [
     {
@@ -32,14 +32,14 @@
     {
       "binding": "DB",
       "database_name": "hebrewparser",
-      "database_id": "00000000-0000-0000-0000-000000000001",
+      "database_id": "19313d3c-9b09-458e-a912-1c86a1787a2a",
       "migrations_dir": "migrations"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "CACHE",
-      "id": "00000000000000000000000000000002"
+      "id": "9519a4563c554fea8d93b6971b8dcdc8"
     }
   ],
   "ai": {
