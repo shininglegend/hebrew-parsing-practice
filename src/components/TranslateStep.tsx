@@ -145,9 +145,9 @@ function TranslateWord({
   return (
     <button
       type="button"
-      className={`group relative rounded-md px-0.5 text-left ${
+      className={`group relative rounded-md px-1 text-left ${
         !selectable || chosen ? "text-slate-900" : "text-slate-400"
-      } ${selectable && chosen ? "underline decoration-slate-800 decoration-2 underline-offset-4" : ""}`}
+      } ${selectable && chosen ? "bg-amber-100" : ""}`}
       aria-expanded={open}
       aria-pressed={selectable ? chosen : undefined}
       onClick={(event) => {
@@ -283,7 +283,7 @@ export function TranslateStep({
           <div className="font-semibold">Write what it says</div>
           <p className="text-sm font-normal text-slate-600">
             {canSelect
-              ? "Translate underlined words. Hover or tap a word to see its translation, morphology, and parse."
+              ? "Translate the highlighted words. Hover or tap a word to see its translation, morphology, and parse."
               : "Tap a word to see its translation, morphology, and parse."}
           </p>
         </div>
