@@ -144,7 +144,7 @@ The `routes` entry in `wrangler.jsonc` names the custom domain. Change it to the
 
 ### 4. Tutor
 
-Tutor calls go through the `AI` binding and an [AI Gateway](https://developers.cloudflare.com/ai-gateway/get-started/). `AI_GATEWAY_ID` is `hebrewparser`. A gateway with any name other than `default` has to exist before the first call: in the dashboard, open **AI** > **AI Gateway** and create one named `hebrewparser`. Only the name `default` is created automatically.
+Tutor calls go through the `AI` binding and an [AI Gateway](https://developers.cloudflare.com/ai-gateway/get-started/). `AI_GATEWAY_ID` is `greekparser`: the Hebrew and Greek apps share the gateway that already exists on the account, so there is nothing to create. A gateway is only a name on the account, not tied to a Worker. The gateway's logs and its spend budget therefore cover both apps together; each request still carries the user id and call kind as metadata, and the per-account monthly token cap lives in this app's own D1. To split them later, create a gateway named `hebrewparser` in the dashboard (**AI** > **AI Gateway**) and change the var.
 
 `AI_MODEL` picks the model for word explanations and `AI_TRANSLATION_MODEL` picks the one for translation reviews. A Workers AI id such as `@cf/meta/llama-3.3-70b-instruct-fp8-fast` is billed in Neurons on the account. An Anthropic id such as `anthropic/claude-sonnet-5` or `anthropic/claude-opus-5` uses the same binding and needs [Unified Billing](https://developers.cloudflare.com/ai-gateway/features/unified-billing/) credits loaded on the gateway. Changing the var and redeploying is the whole switch.
 
