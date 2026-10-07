@@ -17,7 +17,7 @@
   "vars": {
     "AI_MODEL": "anthropic/claude-haiku-4.5",
     "AI_TRANSLATION_MODEL": "anthropic/claude-opus-5.5",
-    "AI_GATEWAY_ID": "hebrewparser",
+    "AI_GATEWAY_ID": "greekparser",
     "ADMIN_EMAILS": ["jvctext@gmail.com"],
     "EMAIL_FROM": "accounts@hebrew.titusmurphy.com",
     "TURNSTILE_SITE_KEY": ""
