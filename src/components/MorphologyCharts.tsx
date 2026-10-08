@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { MORPHOLOGY_CHARTS } from "../data/morphologyCharts";
 
+type ChartKey = keyof typeof MORPHOLOGY_CHARTS;
+
+const HEBREW = /[\u0590-\u05ff]/;
+
 export function MorphologyCharts({ initialChart }: { initialChart?: string }) {
   const [activeChart, setActiveChart] = useState<string>(initialChart ?? "");
 
@@ -8,23 +12,13 @@ export function MorphologyCharts({ initialChart }: { initialChart?: string }) {
     if (initialChart) setActiveChart(initialChart);
   }, [initialChart]);
 
-  // Hebrew paradigm tables are not written yet. Add entries to data/morphologyCharts.ts and
-  // list them here; signals.ts chartFor() can then point signal cards at them.
-  const charts: { key: string; label: string }[] = Object.keys(MORPHOLOGY_CHARTS).map((key) => ({
+  const charts = (Object.keys(MORPHOLOGY_CHARTS) as ChartKey[]).map((key) => ({
     key,
     label: MORPHOLOGY_CHARTS[key].title,
   }));
 
-  const currentChart = MORPHOLOGY_CHARTS[activeChart] ?? MORPHOLOGY_CHARTS[charts[0]?.key ?? ""];
-
-  if (!currentChart) {
-    return (
-      <p className="text-slate-600">
-        No morphology charts yet. The Grammar Guide covers the terms; paradigm tables are on the
-        to-do list.
-      </p>
-    );
-  }
+  const currentChart =
+    MORPHOLOGY_CHARTS[activeChart as ChartKey] ?? MORPHOLOGY_CHARTS[charts[0].key];
 
   return (
     <div className="flex flex-col sm:flex-row gap-3">
@@ -74,18 +68,24 @@ export function MorphologyCharts({ initialChart }: { initialChart?: string }) {
                   <tbody>
                     {table.rows.map((row) => (
                       <tr key={row[0]} className="hover:bg-slate-50">
-                        {row.map((cell, cIdx) => (
-                          <td
-                            key={table.headers[cIdx]}
-                            className={`border border-slate-300 px-2 py-2 ${
-                              cIdx === 0
-                                ? "font-medium text-slate-700"
-                                : "text-slate-800 font-hebrew"
-                            }`}
-                          >
-                            {cell}
-                          </td>
-                        ))}
+                        {row.map((cell, cIdx) => {
+                          const hebrew = cIdx > 0 && HEBREW.test(cell);
+                          return (
+                            <td
+                              key={table.headers[cIdx]}
+                              dir={hebrew ? "rtl" : undefined}
+                              className={`border border-slate-300 px-2 py-2 ${
+                                cIdx === 0
+                                  ? "font-medium text-slate-700"
+                                  : hebrew
+                                    ? "text-slate-800 font-hebrew whitespace-nowrap"
+                                    : "text-slate-800"
+                              }`}
+                            >
+                              {cell}
+                            </td>
+                          );
+                        })}
                       </tr>
                     ))}
                   </tbody>

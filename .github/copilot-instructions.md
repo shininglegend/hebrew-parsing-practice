@@ -23,7 +23,7 @@ Educational web app for Biblical Hebrew morphological parsing practice, using Op
 - `isFieldRelevant` shows prefix/suffix fields only when the gold has them; participles get state and no person; infinitives get no agreement.
 
 ### Signals
-- `src/signals.ts`: `findCue(words, word, field)` reads the word's own prefixes, vowels, dagesh, and ending (or the next word for a construct) and returns `{display, note, wordId?}`. `explainMiss`/`explainCorrect` build the signal card; `GRAMMAR_TERM_ALIAS` maps gold values onto `src/data/grammarDefinitions.ts` terms; `chartFor` returns nothing until `src/data/morphologyCharts.ts` has tables.
+- `src/signals.ts`: `findCue(words, word, field)` reads the word's own prefixes, vowels, dagesh, and ending (or the next word for a construct) and returns `{display, note, wordId?}`. `explainMiss`/`explainCorrect` build the signal card; `GRAMMAR_TERM_ALIAS` maps gold values onto `src/data/grammarDefinitions.ts` terms; `chartFor` maps a field and gold value onto a key of `MORPHOLOGY_CHARTS` (`src/data/morphologyCharts.ts`: article, nouns, pronouns, suffixes, each Hebrew stem, sequential forms). Aramaic stems get no chart.
 - Hebrew text is compared after NFD. Combining marks come in canonical order: vowel point, dagesh, shin/sin dot, then accents. Gutturals and resh never take a dagesh.
 
 ## Conventions

@@ -49,8 +49,10 @@ export function Help() {
           <h4 className="font-semibold text-lg text-slate-800">Additional Resources</h4>
           <p>
             The <strong>Grammar Guide</strong> defines every term used in parsing: prefixes, state,
-            the binyanim, the conjugations, and suffixes. <strong>Morphology Charts</strong> will
-            hold paradigm tables once they are written.
+            the binyanim, the conjugations, and suffixes. <strong>Morphology Charts</strong> holds
+            the paradigm tables: the article, noun endings, pronouns, pronominal suffixes, the
+            strong verb in each stem, and the wayyiqtol and weqatal forms. A signal card opens the
+            chart its form belongs to.
           </p>
         </section>
       </div>

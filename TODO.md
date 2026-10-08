@@ -5,7 +5,8 @@ Note: This list is ordered top-to-bottom by priority. Submit an issue if you wan
 ### Bugfixes
 
 - ~~Check and fix grammar charts~~
-- Write the morphology charts (`src/data/morphologyCharts.ts` is empty, so the Morphology Charts modal says so and signal cards offer no paradigm link; wire `chartFor` in `src/signals.ts` once tables exist)
+- ~~Write the morphology charts (`src/data/morphologyCharts.ts` is empty, so the Morphology Charts modal says so and signal cards offer no paradigm link; wire `chartFor` in `src/signals.ts` once tables exist)~~
+- Weak-verb paradigms for the morphology charts (I-nun, I-yod, hollow, III-he, geminate); the strong verb and the nominal charts are done
 - Stop the card drill's score (`Results.tsx` via `scoreParse`) from showing the gold prefixes before any prefix has been ticked
 - Reverse parser: box width still hints at length; typing without points works only with the toggles on; no per-word reveal
 - ~~Participles decoded as person/gender/number, so gender, number, and state were lost~~

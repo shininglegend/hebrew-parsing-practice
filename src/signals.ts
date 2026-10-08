@@ -1,5 +1,5 @@
 import { GRAMMAR_DEFINITIONS } from "./data/grammarDefinitions";
-import type { MORPHOLOGY_CHARTS } from "./data/morphologyCharts";
+import { MORPHOLOGY_CHARTS } from "./data/morphologyCharts";
 import type { ParseFields } from "./types";
 import { FIELD_LABEL, goldValue, splitPrefixes } from "./utils";
 
@@ -663,16 +663,66 @@ export function grammarFor(field: string, gold: string) {
   return { term: item.term, definition: item.definition, example: item.example };
 }
 
-/**
- * Paradigm chart for this value. The Hebrew charts in data/morphologyCharts.ts are still
- * empty, so no card offers one yet; wire the keys here once the tables exist.
- */
+/** Chart key for each stem value; Aramaic stems are left out because the charts are Hebrew. */
+const STEM_CHART: Record<string, ChartKey> = {
+  qal: "qal",
+  "qal passive": "qal",
+  niphal: "niphal",
+  piel: "piel",
+  pual: "pual",
+  hiphil: "hiphil",
+  hophal: "hophal",
+  hithpael: "hithpael",
+};
+
+/** Paradigm chart for this value, read from the field, the gold value, and the gold parse. */
 function chartFor(
-  _field: string,
-  _gold: string,
-  _parse: ParseFields | undefined
+  field: string,
+  gold: string,
+  parse: ParseFields | undefined
 ): { key: ChartKey; label: string } | undefined {
-  return undefined;
+  const pos = parse?.pos;
+  const nominal =
+    pos === "noun (common)" ||
+    pos === "noun (proper)" ||
+    pos === "noun (gentilic)" ||
+    pos === "adjective" ||
+    pos === "numeral";
+
+  if (field === "prefix") {
+    return gold.includes("ה (the)") ? { key: "article", label: "Article" } : undefined;
+  }
+  if (field.startsWith("suffix")) {
+    if (pos === "preposition" || pos === "particle") {
+      return { key: "suffixesPrepositions", label: "Suffixes on prepositions" };
+    }
+    if (nominal) return { key: "suffixesNouns", label: "Suffixes on nouns" };
+    return undefined;
+  }
+  if (field === "pos") {
+    if (gold === "pronoun") return { key: "pronouns", label: "Pronouns" };
+    if (gold === "verb") return undefined;
+    return gold.startsWith("noun") || gold === "adjective"
+      ? { key: "nouns", label: "Noun endings" }
+      : undefined;
+  }
+  if (pos === "pronoun" && (field === "person" || field === "gender" || field === "number")) {
+    return { key: "pronouns", label: "Pronouns" };
+  }
+  if (field === "state" || ((field === "gender" || field === "number") && pos !== "verb")) {
+    return nominal || field === "state" ? { key: "nouns", label: "Noun endings" } : undefined;
+  }
+
+  // Verb fields: stem, tense, person, and agreement on a verb. A stem miss goes to that
+  // stem's paradigm even on a wayyiqtol; the other fields go to the sequential chart first.
+  const tense = field === "tense" ? gold : parse?.tense;
+  if (field !== "stem" && (tense === "sequential imperfect" || tense === "sequential perfect")) {
+    return { key: "sequential", label: "Wayyiqtol and weqatal" };
+  }
+  const stem = field === "stem" ? gold : parse?.stem;
+  const key = stem ? STEM_CHART[stem] : undefined;
+  if (!key) return undefined;
+  return { key, label: `${MORPHOLOGY_CHARTS[key].title.split(" (")[0]} paradigm` };
 }
 
 const PREFIX_CONJUGATIONS = new Set([

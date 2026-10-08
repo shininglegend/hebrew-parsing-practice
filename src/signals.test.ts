@@ -9,7 +9,7 @@ import {
   grammarFor,
   plainSurface,
 } from "./signals";
-import type { Word } from "./types";
+import type { ParseFields, Word } from "./types";
 
 describe("foldHebrew", () => {
   it("strips points, accents, dividers, and final forms", () => {
@@ -242,7 +242,8 @@ describe("explainMiss", () => {
     expect(note.evidence.some((line) => line.includes("Both are prefix conjugations"))).toBe(true);
     expect(note.english).toContain("and then");
     expect(note.grammar?.term).toBe("Wayyiqtol (Sequential Imperfect)");
-    expect(note.chartKey).toBeUndefined();
+    expect(note.chartKey).toBe("sequential");
+    expect(note.chartLabel).toBe("Wayyiqtol and weqatal");
   });
 
   it("explains a missed prefix pair in English, one clause per prefix", () => {
@@ -309,6 +310,47 @@ describe("explainMiss", () => {
     expect(note.evidence).toEqual([
       "Compare this form with the masculine paradigm, not the common one.",
     ]);
+  });
+});
+
+describe("chartFor (through explainMiss)", () => {
+  const miss = (id: string, field: keyof ParseFields, guess: string, gold: string) => {
+    const word = byId(id);
+    return explainMiss({
+      surface: word.surface,
+      lemma: word.lemma,
+      wordId: word.id,
+      field,
+      guess,
+      gold,
+      parse: word.parse,
+      verseWords: verse,
+    });
+  };
+
+  it("points a stem miss at that stem's paradigm", () => {
+    const note = miss("9", "stem", "qal", "hiphil");
+    expect(note.chartKey).toBe("hiphil");
+    expect(note.chartLabel).toBe("Hiphil paradigm");
+  });
+
+  it("points a missed article prefix at the article chart", () => {
+    const note = miss("10", "prefix", "—", "ה (the)");
+    expect(note.chartKey).toBe("article");
+  });
+
+  it("points noun state and number at the noun endings", () => {
+    expect(miss("3", "state", "absolute", "construct").chartKey).toBe("nouns");
+    expect(miss("10", "number", "plural", "dual").chartKey).toBe("nouns");
+  });
+
+  it("points a pronominal suffix on a noun at the noun suffixes", () => {
+    const note = miss("7", "suffixPerson", "third", "second");
+    expect(note.chartKey).toBe("suffixesNouns");
+  });
+
+  it("offers no chart for an Aramaic stem", () => {
+    expect(miss("9", "stem", "qal", "haphel").chartKey).toBeUndefined();
   });
 });
 
