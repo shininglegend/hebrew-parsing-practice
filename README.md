@@ -8,7 +8,7 @@ An educational web application for practicing Biblical Hebrew morphological pars
 - After the verse is parsed, write an English rendering and compare a parse checklist and up to five of ten public-domain English versions from bible-api.com
 - Weak spots count repeated misses by form, with the word and each wrong guess
 - An approved account can ask for a longer tutor note. Every query and reply is stored for `/admin`
-- The Open Scriptures Hebrew Bible is the grader. The model never overrides a parse
+- The Open Scriptures Hebrew Bible is the grader, with local corrections in `data/oshb-corrections.json`. The model never overrides a parse. It is told the tags can be wrong, and to say so when a tag fights the context
 - Aramaic (Daniel, Ezra, Jeremiah 10:11, Genesis 31:47) is decoded with its own stems: peal, pael, haphel, and the rest
 
 ## Tech Stack
@@ -38,6 +38,7 @@ npm run lint       # Biome lint + format check
 npm run lint:fix   # apply safe fixes and format
 npm run typecheck  # tsc -b across app, worker, and config
 npm test
+npm run test:audit # Python tests for scripts/audit_pausal_2fs.py
 ```
 
 Biome handles both linting and formatting. TypeScript 7 dropped the JavaScript compiler API, so typescript-eslint cannot run against this project. Hook dependency, array-index key, `any`, and most a11y rules report as warnings for now, so they show up without blocking a commit.
@@ -47,6 +48,7 @@ Biome handles both linting and formatting. TypeScript 7 dropped the JavaScript c
 Everything the parser reads ships with the app from `public/`, so a preview branch sees its own data and nothing depends on GitHub at runtime:
 
 - `public/hebrew-data/bible-books/{book}/chapter_{N}.json` is the Open Scriptures Hebrew Bible morphology, one file per chapter, in English chapter and verse numbering. Each word is `[surface, strongs, morph]`, for example `["בְּ/רֵאשִׁ֖ית", "Hb/H7225", "R/Ncfsa"]`. The `/` separates the morphemes OSHB tagged. `hebrewMorphCodes.html` documents the codes; `src/api.ts` decodes them.
+- `data/oshb-corrections.json` retags words OSHB gets wrong, without touching the files above. It is applied where a chapter is fetched, so the answer key, signal cards, tutor, and weak spots all see the fix. The first entries are pausal 2ms suffixes (‑ָךְ, like עִמָּךְ said to Joshua) that OSHB tags 2fs. `scripts/audit_pausal_2fs.py` lists more candidates for review in `data/audit-pausal-2fs.csv`. See `data/README.md`.
 - `public/lexicon/tbesh-glosses.json` is the brief gloss shown under each word: the Gloss column of the Translators Brief lexicon of Extended Strongs for Hebrew (TBESH) from STEPBible.org (CC BY 4.0, see `public/lexicon/LICENSE-tbesh.txt`), keyed by Strong's number. Strong's own KJV lists are alphabetical, so taking their first word gives "angels" for אֱלֹהִים; TBESH gives one curated gloss per number. `npm run build:glosses` downloads the current TBESH and rebuilds the file (`node scripts/build-glosses.mjs path/to/tbesh.txt` works from a local copy).
 - `public/lexicon/strongs-hebrew.json` is Strong's Hebrew dictionary in the Open Scriptures edition (CC-BY-SA, see `public/lexicon/LICENSE-strongs.txt`), trimmed to the fields the app shows. It is the full definition popup, and the brief fallback for any number TBESH lacks. To regenerate it:
 
@@ -210,6 +212,7 @@ Things that differ on purpose, so a cherry-pick that touches them needs a look:
 
 - `src/App.tsx` - Routes for study, reverse parsing, weak spots, and admin
 - `src/api.ts` - OSHB chapter loading and the morphology decoder
+- `src/corrections.ts` - Applies `data/oshb-corrections.json` to each chapter as it loads
 - `src/signals.ts` - Cues and explanations for misses
 - `src/lexicon.ts` - TBESH glosses and Strong's definitions
 - `worker/` - Session, tutor, and admin API
@@ -218,4 +221,4 @@ Things that differ on purpose, so a cherry-pick that touches them needs a look:
 
 ## Data Sources
 
-Morphology is from the [Open Scriptures Hebrew Bible](https://github.com/openscriptures/morphhb). If a parse is wrong, open an issue there. Brief glosses are from the [Translators Brief lexicon of Extended Strongs for Hebrew](https://github.com/STEPBible/STEPBible-Data) by STEPBible.org and Tyndale House (CC BY 4.0). Full definitions are from Strong's Hebrew dictionary in the [Open Scriptures edition](https://github.com/openscriptures/strongs) (CC-BY-SA). English versions come from [bible-api.com](https://bible-api.com).
+Morphology is from the [Open Scriptures Hebrew Bible](https://github.com/openscriptures/morphhb). If a parse is wrong, open an issue there, and add a local fix to `data/oshb-corrections.json` until upstream ships it. Brief glosses are from the [Translators Brief lexicon of Extended Strongs for Hebrew](https://github.com/STEPBible/STEPBible-Data) by STEPBible.org and Tyndale House (CC BY 4.0). Full definitions are from Strong's Hebrew dictionary in the [Open Scriptures edition](https://github.com/openscriptures/strongs) (CC-BY-SA). English versions come from [bible-api.com](https://bible-api.com).

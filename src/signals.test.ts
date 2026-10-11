@@ -190,8 +190,9 @@ describe("findCue", () => {
 
   it("reads a pronominal suffix from its spelling", () => {
     const cue = findCue(verse, byId("7"), "suffixPerson");
-    expect(cue?.display).toBe("ךְ");
-    expect(cue?.note).toContain("second");
+    // Aramaic spells the ordinary 2ms with qamats + kaf, like the Hebrew pausal 2ms
+    expect(cue?.display).toBe("ָךְ");
+    expect(cue?.note).toContain("second masculine singular");
   });
 
   it("marks the dual ending", () => {

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "06n5f",
+    "ref": "Josh.1.5",
+    "index": 12,
+    "word": "עִמָּ֔/ךְ",
+    "oshb_morph": "HR/Sp2fs",
+    "corrected_morph": "HR/Sp2ms",
+    "reason": "Pausal 2ms suffix; addressee is Joshua"
+  },
+  {
+    "id": "06JZq",
+    "ref": "Josh.1.17",
+    "index": 12,
+    "word": "עִמָּ֔/ךְ",
+    "oshb_morph": "HR/Sp2fs",
+    "corrected_morph": "HR/Sp2ms",
+    "reason": "Pausal 2ms suffix; addressee is Joshua"
+  },
+  {
+    "id": "06965",
+    "ref": "Josh.3.7",
+    "index": 19,
+    "word": "עִמָּֽ/ךְ",
+    "oshb_morph": "HR/Sp2fs",
+    "corrected_morph": "HR/Sp2ms",
+    "reason": "Pausal 2ms suffix; addressee is Joshua"
+  },
+  {
+    "id": "06gSo",
+    "ref": "Josh.7.10",
+    "index": 5,
+    "word": "לָ֑/ךְ",
+    "oshb_morph": "HR/Sp2fs",
+    "corrected_morph": "HR/Sp2ms",
+    "reason": "Pausal 2ms suffix; addressee is Joshua"
+  },
+  {
+    "id": "06jkK",
+    "ref": "Josh.17.17",
+    "index": 13,
+    "word": "לָ֔/ךְ",
+    "oshb_morph": "HR/Sp2fs",
+    "corrected_morph": "HR/Sp2ms",
+    "reason": "Pausal 2ms suffix; addressee is the house of Joseph"
+  },
+  {
+    "id": "06L1P",
+    "ref": "Josh.17.18",
+    "index": 3,
+    "word": "לָּ/ךְ֙",
+    "oshb_morph": "HR/Sp2fs",
+    "corrected_morph": "HR/Sp2ms",
+    "reason": "Pausal 2ms suffix; addressee is the house of Joseph"
+  }
+]

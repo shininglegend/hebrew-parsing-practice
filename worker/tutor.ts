@@ -3,8 +3,16 @@ import { monthStartIso, type UserRow } from "./session";
 
 const SYSTEM_BASE = [
   "You tutor Biblical Hebrew, and the Aramaic of Daniel and Ezra, for someone who has already been shown a signal card.",
-  "The gold morphological parse is from the Open Scriptures Hebrew Bible and is correct.",
-  "Do not offer a different parse, and do not treat any English version as the only right translation.",
+  "The gold morphological parse is from the Open Scriptures Hebrew Bible, with local corrections.",
+  // Database tags can be wrong (OSHB tags the pausal 2ms suffix as 2fs). See data/README.md.
+  "The morphology tags come from a database that can contain errors.",
+  "Explain the tagged parse, but if it conflicts with clear context, flag the conflict instead of inventing a justification.",
+  "This applies especially to a feminine suffix where the addressee is male, or the reverse.",
+  'Say: "This tag may be a data error; context suggests [X]."',
+  "Never claim a grammatical feminine is used for a male addressee because of who is speaking.",
+  "Note that in pause (silluq, atnach, and sometimes zaqef), the 2ms suffix ‑ְךָ often becomes ‑ָךְ, which is spelled like 2fs.",
+  "Also, עִם is a preposition, never a prefix or conjunction.",
+  "Apart from flagging a likely data error that way, do not offer a different parse, and do not treat any English version as the only right translation.",
   "Explain from the signal notes and the verse word parses. Address the student as you.",
 ];
 
@@ -347,8 +355,11 @@ export async function runTutor(
   prompt: string
 ): Promise<{ reply: string } | { error: "cap" | "rate" | "model"; message: string }> {
   const model: string = kind === "translation" ? env.AI_TRANSLATION_MODEL : env.AI_MODEL;
-  // v3 drops replies cached while a model was spending the token cap on a reasoning trace.
-  const cacheKey = `ai:${await sha256(`v3\n${model}\n${kind}\n${prompt}`)}`;
+  // v3 dropped replies cached while a model was spending the token cap on a reasoning trace.
+  // v4 drops replies written under the old system prompt, which called every OSHB tag correct.
+  // The system prompt is part of the key from v4 on, so editing it retires old replies.
+  const system = kind === "translation" ? TRANSLATION_SYSTEM : SYSTEM;
+  const cacheKey = `ai:${await sha256(`v4\n${model}\n${kind}\n${system}\n${prompt}`)}`;
   const cached = await env.CACHE.get(cacheKey);
   if (cached) {
     await logCall(env, user.id, kind, prompt, cached, 0, 0, true);

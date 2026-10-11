@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osis xmlns="http://www.bibletechnologies.net/2003/OSIS/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bibletechnologies.net/2003/OSIS/namespace http://www.bibletechnologies.net/osisCore.2.1.1.xsd">
+  <osisText xml:lang="he" osisIDWork="OSHB" osisRefWork="Bible">
+    <header>
+      <revisionDesc resp="dt">
+        <date>2018.12.14</date>
+        <p>Release of full morphology</p>
+      </revisionDesc>
+      <revisionDesc resp="dt">
+        <date>2016.03.03</date>
+        <p>Updated to WLC version 4.20.</p>
+      </revisionDesc>
+      <revisionDesc resp="dt">
+        <date>2013.12.11</date>
+        <p>First release of morphology on selected portions.</p>
+      </revisionDesc>
+      <revisionDesc resp="dt">
+        <date>2013.07.10</date>
+        <p>Updated to WLC version 4.18.</p>
+      </revisionDesc>
+      <revisionDesc resp="dt">
+        <date>2012.07.18</date>
+        <p>Updated to WLC version 4.16.</p>
+      </revisionDesc>
+      <revisionDesc resp="dt">
+        <date>2011.01.21</date>
+        <p>Updated to WLC version 4.14.</p>
+      </revisionDesc>
+      <revisionDesc resp="dt">
+        <date>2008.08.08</date>
+        <p>Convert the Westminster Leningrad Codex files from TEI markup to OSIS book files.</p>
+      </revisionDesc>
+      <work osisWork="OSHB" xml:lang="he">
+        <title>Open Scriptures Hebrew Bible</title>
+        <contributor role="edt">Daniel Owens</contributor>
+        <contributor role="edt">David Troidl</contributor>
+        <date>2007.9.16</date>
+        <identifier type="URL">https://github.com/openscriptures/morphhb</identifier>
+        <rights type="x-BY">Creative Commons Attribution 4.0</rights>
+        <refSystem>Bible.MT</refSystem>
+      </work>
+      <work osisWork="WLC" xml:lang="he">
+        <title>Westminster Leningrad Codex</title>
+        <contributor role="edt">Christopher V. Kimball</contributor>
+        <date>2007.9.16</date>
+        <identifier type="URL">http://www.tanach.us/Tanach.xml</identifier>
+        <rights>Public Domain</rights>
+        <refSystem>Bible.MT</refSystem>
+      </work>
+      <work osisWork="BHS" xml:lang="he">
+        <title>BHS unaccented with Strongs</title>
+        <contributor role="edt">Joseph Planeta</contributor>
+        <contributor role="edt">Rev. Graham Nind</contributor>
+        <description>Unaccented Biblia Hebraica Stuttgartensia Hebrew with Strong's numbers by Rev. Graham.</description>
+        <identifier type="URL">http://www.faithofgod.net/</identifier>
+        <identifier type="URL">http://www.grahamnind.dsl.pipex.com/files</identifier>
+        <rights>Public Domain</rights>
+      </work>
+      <work osisWork="Strong" xml:lang="en">
+        <title>A Concise Dictionary of the Words in the Hebrew Bible</title>
+        <title type="sub">with their Renderings in the King James Version</title>
+        <contributor role="edt">David Troidl</contributor>
+        <contributor role="edt">David Instone-Brewer</contributor>
+        <creator role="edt">James Strong, LL.D., S.T.D.</creator>
+        <date>1894</date>
+        <description resp="dib">The data came from several PD sources which were full of errors. I cleaned them by comparing them to each other and (where necessary) looking at the original.</description>
+        <publisher>Hunt &amp; Eaton</publisher>
+        <identifier type="URL">www.2LetterLookup.com</identifier>
+        <source>The exhaustive concordance of the Bible:</source>
+        <rights>Public Domain</rights>
+        <refSystem>Dict.Strongs</refSystem>
+      </work>
+      <work osisWork="OSHM" xml:lang="en">
+        <title>Open Scriptures Hebrew Morphology</title>
+        <contributor role="ctb">Chapel Presson</contributor>
+        <contributor role="ctb">Daniel Owens</contributor>
+        <contributor role="ctb">David Troidl</contributor>
+        <contributor role="ctb">Jesse Griffin</contributor>
+        <contributor role="ctb">Andy Hubert</contributor>
+        <contributor role="ctb">Angela Westmoreland</contributor>
+        <contributor role="ctb">Grant Ailie</contributor>
+        <contributor role="ctb">Joel Ruark</contributor>
+        <contributor role="ctb">Kenny Hilliard</contributor>
+        <contributor role="ctb">Luong Hao Tran</contributor>
+        <contributor role="ctb">Nathan Wilson</contributor>
+        <contributor role="ctb">Ryan Davis</contributor>
+        <contributor role="ctb">Aaron Laws</contributor>
+        <contributor role="ctb">Adam Nagelvoort</contributor>
+        <contributor role="ctb">Adriel Ickler</contributor>
+        <contributor role="ctb">Agus Santoso</contributor>
+        <contributor role="ctb">Andy Hophd</contributor>
+        <contributor role="ctb">Angelo Salais</contributor>
+        <contributor role="ctb">Annie Jeong</contributor>
+        <contributor role="ctb">Ariel Tidre Ferreira</contributor>
+        <contributor role="ctb">Artsiom Vorsa</contributor>
+        <contributor role="ctb">artyom vorsa</contributor>
+        <contributor role="ctb">Ashley Whitlatch</contributor>
+        <contributor role="ctb">Austen Dutton</contributor>
+        <contributor role="ctb">Barry Smith</contributor>
+        <contributor role="ctb">Ben Dwyer</contributor>
+        <contributor role="ctb">Ben Wulpi</contributor>
+        <contributor role="ctb">Benjamin Epstein</contributor>
+        <contributor role="ctb">Bill Chaffin</contributor>
+        <contributor role="ctb">Braxton Bogard</contributor>
+        <contributor role="ctb">Bret Stewart</contributor>
+        <contributor role="ctb">Bruce Taylor</contributor>
+        <contributor role="ctb">Bryant Huang</contributor>
+        <contributor role="ctb">Caleb Maclennan</contributor>
+        <contributor role="ctb">chad buel</contributor>
+        <contributor role="ctb">Chase Parkey</contributor>
+        <contributor role="ctb">Cheryl Riddell</contributor>
+        <contributor role="ctb">Chris McKirgan</contributor>
+        <contributor role="ctb">Christof  Bucherer</contributor>
+        <contributor role="ctb">ciro izzo</contributor>
+        <contributor role="ctb">Clemens Gudenus</contributor>
+        <contributor role="ctb">Cody Kingham</contributor>
+        <contributor role="ctb">Cody Marceau</contributor>
+        <contributor role="ctb">Collin Hatcher</contributor>
+        <contributor role="ctb">Connie Andrews</contributor>
+        <contributor role="ctb">Damien Riegel</contributor>
+        <contributor role="ctb">Dan Simmons</contributor>
+        <contributor role="ctb">Daniel Bowman</contributor>
+        <contributor role="ctb">Danielle Pamela</contributor>
+        <contributor role="ctb">Darla Nine</contributor>
+        <contributor role="ctb">Darrell Smith</contributor>
+        <contributor role="ctb">Dave Jones</contributor>
+        <contributor role="ctb">Dave Whitman</contributor>
+        <contributor role="ctb">David Carr</contributor>
+        <contributor role="ctb">David Cohen</contributor>
+        <contributor role="ctb">David Laycock</contributor>
+        <contributor role="ctb">David Lewis</contributor>
+        <contributor role="ctb">David Roth</contributor>
+        <contributor role="ctb">David Uhrik</contributor>
+        <contributor role="ctb">Diana Zhang</contributor>
+        <contributor role="ctb">Diego Chaves</contributor>
+        <contributor role="ctb">Dmitriy Kashelevskiy</contributor>
+        <contributor role="ctb">doug hendren</contributor>
+        <contributor role="ctb">Eddy Yates</contributor>
+        <contributor role="ctb">Edgar Vorsa</contributor>
+        <contributor role="ctb">Eduardo Martorano</contributor>
+        <contributor role="ctb">Eiichi  Masuda </contributor>
+        <contributor role="ctb">Eliezer Abreu</contributor>
+        <contributor role="ctb">Eric Wong</contributor>
+        <contributor role="ctb">Esther Dang</contributor>
+        <contributor role="ctb">Ferenczi Kristof</contributor>
+        <contributor role="ctb">Flavio Souza</contributor>
+        <contributor role="ctb">Frederick Edelstein</contributor>
+        <contributor role="ctb">Gantumur Luvsangombo</contributor>
+        <contributor role="ctb">Gary Rickman</contributor>
+        <contributor role="ctb">Geert Kok</contributor>
+        <contributor role="ctb">Gerald Broadbent</contributor>
+        <contributor role="ctb">Gergely Juhasz</contributor>
+        <contributor role="ctb">Giancarlos Toro</contributor>
+        <contributor role="ctb">Greg Walton</contributor>
+        <contributor role="ctb">Hamidreza Hatamikasavand</contributor>
+        <contributor role="ctb">Hector Molano</contributor>
+        <contributor role="ctb">Hermanus Taute</contributor>
+        <contributor role="ctb">hermon chan</contributor>
+        <contributor role="ctb">Hyman Robles</contributor>
+        <contributor role="ctb">Hyunsoo Yang</contributor>
+        <contributor role="ctb">inhyuk lee</contributor>
+        <contributor role="ctb">Israel Andrade</contributor>
+        <contributor role="ctb">Israel Ruiz</contributor>
+        <contributor role="ctb">Jack Weinbender</contributor>
+        <contributor role="ctb">JaiHee Kwak</contributor>
+        <contributor role="ctb">James Bejon</contributor>
+        <contributor role="ctb">James Castell</contributor>
+        <contributor role="ctb">James Cuenod</contributor>
+        <contributor role="ctb">James Duguid</contributor>
+        <contributor role="ctb">Jean veran</contributor>
+        <contributor role="ctb">JeanJacques KRIEF</contributor>
+        <contributor role="ctb">Jeff Goo</contributor>
+        <contributor role="ctb">Jeong Jae Yoo</contributor>
+        <contributor role="ctb">Jeremiah Myers</contributor>
+        <contributor role="ctb">Jeremy Bullard</contributor>
+        <contributor role="ctb">jessica jones</contributor>
+        <contributor role="ctb">Jiri Richter</contributor>
+        <contributor role="ctb">Joao Luis Fedel Goncalves</contributor>
+        <contributor role="ctb">Joel Peeters</contributor>
+        <contributor role="ctb">Joel Rubin</contributor>
+        <contributor role="ctb">john knightley</contributor>
+        <contributor role="ctb">John Mellison</contributor>
+        <contributor role="ctb">John Studebaker</contributor>
+        <contributor role="ctb">jonatas margiotta</contributor>
+        <contributor role="ctb">Jonathan Walsh</contributor>
+        <contributor role="ctb">jony clynn</contributor>
+        <contributor role="ctb">Jose Martinez</contributor>
+        <contributor role="ctb">joseph lee</contributor>
+        <contributor role="ctb">Joseph Li</contributor>
+        <contributor role="ctb">Joseph MICHEL</contributor>
+        <contributor role="ctb">Judy Hendren</contributor>
+        <contributor role="ctb">Julia Tang</contributor>
+        <contributor role="ctb">Justin So</contributor>
+        <contributor role="ctb">Juswaldy Jusman</contributor>
+        <contributor role="ctb">Kap Soo LEE</contributor>
+        <contributor role="ctb">Kara Bohall</contributor>
+        <contributor role="ctb">Karel Jongeling</contributor>
+        <contributor role="ctb">Kathy Scott</contributor>
+        <contributor role="ctb">Keanan Bovie</contributor>
+        <contributor role="ctb">Keith Hanson</contributor>
+        <contributor role="ctb">Keith Kresge</contributor>
+        <contributor role="ctb">Kevin Andersson</contributor>
+        <contributor role="ctb">Kevin Johanson</contributor>
+        <contributor role="ctb">Kevin Townsend</contributor>
+        <contributor role="ctb">Kiriana Kingston</contributor>
+        <contributor role="ctb">Laurentiu Gabriel Ionescu</contributor>
+        <contributor role="ctb">LEE Arrington</contributor>
+        <contributor role="ctb">Lee Bruckner</contributor>
+        <contributor role="ctb">Len Clark</contributor>
+        <contributor role="ctb">Leng Xiong</contributor>
+        <contributor role="ctb">LENO VICTOR DE SANTANA</contributor>
+        <contributor role="ctb">libor neuman</contributor>
+        <contributor role="ctb">lisa lisa</contributor>
+        <contributor role="ctb">M Cecil Dietz</contributor>
+        <contributor role="ctb">Malkalain Greenwell</contributor>
+        <contributor role="ctb">Marc Cordova</contributor>
+        <contributor role="ctb">Marfeal Santiago</contributor>
+        <contributor role="ctb">Marianne Szpilka</contributor>
+        <contributor role="ctb">Martin Daly</contributor>
+        <contributor role="ctb">Matan Bino</contributor>
+        <contributor role="ctb">Matthew Schug</contributor>
+        <contributor role="ctb">Max Pilo</contributor>
+        <contributor role="ctb">Micahel Leong</contributor>
+        <contributor role="ctb">Michael Fenn</contributor>
+        <contributor role="ctb">Michael Nicholson</contributor>
+        <contributor role="ctb">Miguel SANTOS</contributor>
+        <contributor role="ctb">Mike Brown</contributor>
+        <contributor role="ctb">mike fenn</contributor>
+        <contributor role="ctb">mirlande amazan</contributor>
+        <contributor role="ctb">Moongui Ulbrich</contributor>
+        <contributor role="ctb">Napoleon Gasilan</contributor>
+        <contributor role="ctb">Natashia Roy</contributor>
+        <contributor role="ctb">Nathan Bierma</contributor>
+        <contributor role="ctb">Nathan Lee</contributor>
+        <contributor role="ctb">Nathan Wilson</contributor>
+        <contributor role="ctb">Neil Cadman</contributor>
+        <contributor role="ctb">Okyob Jeon</contributor>
+        <contributor role="ctb">omer omer</contributor>
+        <contributor role="ctb">Onur Yos</contributor>
+        <contributor role="ctb">Paul Cook</contributor>
+        <contributor role="ctb">Pete Myers</contributor>
+        <contributor role="ctb">pete Norcross</contributor>
+        <contributor role="ctb">Peter Erdodi</contributor>
+        <contributor role="ctb">Peter Ho</contributor>
+        <contributor role="ctb">peter zimonyi</contributor>
+        <contributor role="ctb">Petr Miencil</contributor>
+        <contributor role="ctb">Petr Vejmelka</contributor>
+        <contributor role="ctb">phyl ma</contributor>
+        <contributor role="ctb">ralph zak</contributor>
+        <contributor role="ctb">Ramos Simanjuntak</contributor>
+        <contributor role="ctb">Rebeca Martinez</contributor>
+        <contributor role="ctb">Regina Hong</contributor>
+        <contributor role="ctb">Rendhi Vianirio</contributor>
+        <contributor role="ctb">Ricardo  Luiz Pinto</contributor>
+        <contributor role="ctb">Richard Baker</contributor>
+        <contributor role="ctb">Robert Berger</contributor>
+        <contributor role="ctb">Robert Holmstedt</contributor>
+        <contributor role="ctb">robert saunders</contributor>
+        <contributor role="ctb">Roberta Potgieter</contributor>
+        <contributor role="ctb">rocket fortyfive</contributor>
+        <contributor role="ctb">Rodrigo Castro</contributor>
+        <contributor role="ctb">Ross Tenneson</contributor>
+        <contributor role="ctb">Ruairidh MacLean</contributor>
+        <contributor role="ctb">Ruben Kraiem</contributor>
+        <contributor role="ctb">Sebastien GOEURY</contributor>
+        <contributor role="ctb">Shane Pimental</contributor>
+        <contributor role="ctb">Sharon Hamel</contributor>
+        <contributor role="ctb">Shawn Goodwin</contributor>
+        <contributor role="ctb">shukai cheung</contributor>
+        <contributor role="ctb">Siew GuoFen</contributor>
+        <contributor role="ctb">silas army</contributor>
+        <contributor role="ctb">Simon Pan</contributor>
+        <contributor role="ctb">Sir Robert Burbridge</contributor>
+        <contributor role="ctb">Soliman Hanna</contributor>
+        <contributor role="ctb">Spyros Karalis</contributor>
+        <contributor role="ctb">Stephen Durkee</contributor>
+        <contributor role="ctb">Steve Beukema</contributor>
+        <contributor role="ctb">SunGyo Kim</contributor>
+        <contributor role="ctb">Talia  Smith</contributor>
+        <contributor role="ctb">Thien Tran</contributor>
+        <contributor role="ctb">Thierry Tchiakpe</contributor>
+        <contributor role="ctb">tiago thorlby</contributor>
+        <contributor role="ctb">Timothy Keiderling</contributor>
+        <contributor role="ctb">timothy yeh</contributor>
+        <contributor role="ctb">Todd Patterson</contributor>
+        <contributor role="ctb">Toe Set</contributor>
+        <contributor role="ctb">Tomas Uher</contributor>
+        <contributor role="ctb">Troy Nelson</contributor>
+        <contributor role="ctb">uriel arevalo</contributor>
+        <contributor role="ctb">Vanda Bayer</contributor>
+        <contributor role="ctb">Vladimir Polyanskia</contributor>
+        <contributor role="ctb">w s</contributor>
+        <contributor role="ctb">Wally Kimball</contributor>
+        <contributor role="ctb">walt seevers</contributor>
+        <contributor role="ctb">Wattanavadee Jitpakdee</contributor>
+        <contributor role="ctb">Wayne Buchanan</contributor>
+        <contributor role="ctb">Wellington Machado</contributor>
+        <contributor role="ctb">Wendy Kwan</contributor>
+        <contributor role="ctb">Wesley Walker</contributor>
+        <contributor role="ctb">William Pak</contributor>
+        <contributor role="ctb">william stewart</contributor>
+        <contributor role="ctb">Xi Li</contributor>
+        <contributor role="ctb">yasu shimizu</contributor>
+        <contributor role="ctb">Yoo sung  Chang</contributor>
+        <contributor role="ctb">zac rigsby</contributor>
+        <contributor role="ctb">Zack Vera</contributor>
+        <contributor role="ctb">zhishi Lin</contributor>
+        <contributor role="ctb">Zsolt Jarai</contributor>
+        <creator role="edt">Open Scriptures Hebrew Bible Project</creator>
+        <date>2019.1.13</date>
+        <identifier type="URL">https://github.com/openscriptures/morphhb</identifier>
+        <rights type="x-BY">Creative Commons Attribution 4.0</rights>
+        <refSystem>Dict.oshm</refSystem>
+      </work>
+      <workPrefix path="//w/@lemma" osisWork="Strong"/>
+      <workPrefix path="//w/@morph" osisWork="OSHM"/>
+    </header>
+    <div type="book" osisID="Josh">
+      <chapter osisID="Josh.2">
+        <verse osisID="Josh.2.3">
+          <w lemma="c/7971" n="1.1.0" morph="HC/Vqw3ms" id="06yT5">וַ/יִּשְׁלַח֙</w>
+          <w lemma="4428" morph="HNcmsc" id="06b5Q">מֶ֣לֶךְ</w>
+          <w lemma="3405" n="1.1" morph="HNp" id="06F88">יְרִיח֔וֹ</w>
+          <w lemma="413" morph="HR" id="06AXb">אֶל</w><seg type="x-maqqef">־</seg><w lemma="7343" n="1.0" morph="HNp" id="06Wjz">רָחָ֖ב</w>
+          <w lemma="l/559" n="1" morph="HR/Vqc" id="06bPJ">לֵ/אמֹ֑ר</w>
+          <w lemma="3318" n="0.1.0.0" morph="HVhv2fs" id="06hS1">ה֠וֹצִיאִי</w>
+          <w lemma="d/376" morph="HTd/Ncmpa" id="06h53">הָ/אֲנָשִׁ֨ים</w>
+          <w lemma="d/935" morph="HTd/Vqrmpa" id="06vpK">הַ/בָּאִ֤ים</w>
+          <w lemma="413" n="0.1.0" morph="HR/Sp2fs" id="06G6E">אֵלַ֨יִ/ךְ֙</w>
+          <w lemma="834 a" morph="HTr" id="064vX">אֲשֶׁר</w><seg type="x-maqqef">־</seg><w lemma="935" morph="HVqp3cp" id="06X1R">בָּ֣אוּ</w>
+          <w lemma="l/1004 b" n="0.1" morph="HR/Ncmsc/Sp2fs" id="06bsu">לְ/בֵיתֵ֔/ךְ</w>
+          <w lemma="3588 a" n="0.0.0" morph="HC" id="06Ygn">כִּ֛י</w>
+          <w lemma="l/2658" morph="HR/Vqc" id="062gM">לַ/חְפֹּ֥ר</w>
+          <w lemma="853" morph="HTo" id="06pAw">אֶת</w><seg type="x-maqqef">־</seg><w lemma="3605" morph="HNcmsc" id="06mVV">כָּל</w><seg type="x-maqqef">־</seg><w lemma="d/776" n="0.0" morph="HTd/Ncbsa" id="06FMa">הָ/אָ֖רֶץ</w>
+          <w lemma="935" n="0" morph="HVqp3cp" id="06KPU">בָּֽאוּ</w><seg type="x-sof-pasuq">׃</seg>
+        </verse>
+        <verse osisID="Josh.2.14">
+          <w lemma="c/559" morph="HC/Vqw3mp" id="06vpT">וַ/יֹּ֧אמְרוּ</w>
+          <w lemma="l" morph="HR/Sp3fs" id="063Sx">לָ֣/הּ</w>
+          <w lemma="d/376" n="1.2.1" morph="HTd/Ncmpa" id="06qVv">הָ/אֲנָשִׁ֗ים</w>
+          <w lemma="5315" morph="HNcbsc/Sp1cp" id="06Kov">נַפְשֵׁ֤/נוּ</w>
+          <w lemma="8478" n="1.2.0" morph="HR/Sp2mp" id="06HNy">תַחְתֵּי/כֶם֙</w>
+          <w lemma="l/4191" n="1.2" morph="HR/Vqc" id="06Ta6">לָ/מ֔וּת</w>
+          <w lemma="518 a" n="1.1.0" morph="HC" id="06ER2">אִ֚ם</w>
+          <w lemma="3808" morph="HTn" id="06yP1">לֹ֣א</w>
+          <w lemma="5046" n="1.1" morph="HVhi2mp" id="06w4T">תַגִּ֔ידוּ</w>
+          <w lemma="853" morph="HTo" id="06Cyx">אֶת</w><seg type="x-maqqef">־</seg><w lemma="1697" n="1.0" morph="HNcmsc/Sp1cp" id="06qTT">דְּבָרֵ֖/נוּ</w>
+          <w lemma="2088" n="1" morph="HPdxms" id="06m55">זֶ֑ה</w>
+          <w lemma="c/1961" n="0.1.1" morph="HC/Vqq3ms" id="06AF1">וְ/הָיָ֗ה</w>
+          <w lemma="b/5414" morph="HR/Vqc" id="065ED">בְּ/תֵת</w><seg type="x-maqqef">־</seg><w lemma="3068" morph="HNp" id="06zCS">יְהוָ֥ה</w>
+          <w lemma="l" n="0.1.0" morph="HR/Sp1cp" id="06LsC">לָ֨/נוּ֙</w>
+          <w lemma="853" morph="HTo" id="06B4x">אֶת</w><seg type="x-maqqef">־</seg><w lemma="d/776" n="0.1" morph="HTd/Ncbsa" id="06JB6">הָ/אָ֔רֶץ</w>
+          <w lemma="c/6213 a" morph="HC/Vqq1cp" id="06LzS">וְ/עָשִׂ֥ינוּ</w>
+          <w lemma="5973 a" n="0.0" morph="HR/Sp2fs" id="0683E">עִמָּ֖/ךְ</w>
+          <w lemma="2617 a" morph="HNcmsa" id="06hQD">חֶ֥סֶד</w>
+          <w lemma="c/571" n="0" morph="HC/Ncfsa" id="06LZD">וֶ/אֱמֶֽת</w><seg type="x-sof-pasuq">׃</seg>
+        </verse>
+      </chapter>
+      <chapter osisID="Josh.3">
+        <verse osisID="Josh.3.7">
+          <w lemma="c/559" morph="HC/Vqw3ms" id="06a9X">וַ/יֹּ֤אמֶר</w>
+          <w lemma="3068" n="1.2.0" morph="HNp" id="06RUp">יְהוָה֙</w>
+          <w lemma="413" morph="HR" id="067Kw">אֶל</w><seg type="x-maqqef">־</seg><w lemma="3091" n="1.2" morph="HNp" id="06E6n">יְהוֹשֻׁ֔עַ</w>
+          <w lemma="d/3117" morph="HTd/Ncmsa" id="064YU">הַ/יּ֣וֹם</w>
+          <w lemma="d/2088" n="1.1.1" morph="HTd/Pdxms" id="06yMS">הַ/זֶּ֗ה</w>
+          <w lemma="2490 c" n="1.1.0" morph="HVhi1cs" id="06RZD">אָחֵל֙</w>
+          <w lemma="1431" n="1.1" morph="HVpc/Sp2ms" id="06T97">גַּדֶּלְ/ךָ֔</w>
+          <w lemma="b/5869 a" n="1.0" morph="HR/Ncbdc" id="065L1">בְּ/עֵינֵ֖י</w>
+          <w lemma="3605" morph="HNcmsc" id="06nY7">כָּל</w><seg type="x-maqqef">־</seg><w lemma="3478" n="1" morph="HNp" id="06S83">יִשְׂרָאֵ֑ל</w>
+          <w lemma="834 a" n="0.1.0" morph="HTr" id="06SDb">אֲשֶׁר֙</w>
+          <w lemma="3045" n="0.1" morph="HVqi3mp/Sn" id="06DKS">יֵֽדְע֔וּ/ן</w>
+          <w lemma="3588 a" n="0.0.1" morph="HC" id="06YKr">כִּ֗י</w>
+          <w lemma="k/834 d" morph="HR/Tr" id="06r66">כַּ/אֲשֶׁ֥ר</w>
+          <w lemma="1961" n="0.0.0" morph="HVqp1cs" id="06TW5">הָיִ֛יתִי</w>
+          <w lemma="5973 a" morph="HR" id="06KaN">עִם</w><seg type="x-maqqef">־</seg><w lemma="4872" n="0.0" morph="HNp" id="06FsE">מֹשֶׁ֖ה</w>
+          <w lemma="1961" morph="HVqi1cs" id="067Np">אֶהְיֶ֥ה</w>
+          <w lemma="5973 a" n="0" morph="HR/Sp2fs" id="06965">עִמָּֽ/ךְ</w><seg type="x-sof-pasuq">׃</seg>
+        </verse>
+      </chapter>
+    </div>
+  </osisText>
+</osis>

@@ -1,3 +1,4 @@
+import { applyCorrections } from "./corrections";
 import type { ParseFields, Verse, Word } from "./types";
 import { bookEntry, joinPrefixes, splitPrefixes } from "./utils";
 
@@ -329,7 +330,8 @@ async function fetchChapter(filename: string, chapter: number, name: string): Pr
   if (!response.ok || !type.includes("json")) {
     throw new Error(`${name} ${chapter} is not in the data.`);
   }
-  return response.json();
+  // The one place OSHB tags enter the app, so every consumer sees the local corrections
+  return applyCorrections(await response.json(), filename, chapter);
 }
 
 function loadChapterData(filename: string, chapter: number, name: string): Promise<unknown> {

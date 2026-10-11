@@ -14,7 +14,9 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "typecheck": "tsc -b",
-    "build:glosses": "node scripts/build-glosses.mjs"
+    "build:glosses": "node scripts/build-glosses.mjs",
+    "audit:pausal": "python3 scripts/audit_pausal_2fs.py",
+    "test:audit": "python3 -m unittest discover -s scripts"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

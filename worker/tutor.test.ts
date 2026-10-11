@@ -123,6 +123,19 @@ describe("translationPrompt", () => {
 });
 
 describe("tutorRequest", () => {
+  it("tells both tutors that a tag can be a data error, pausal 2ms included", () => {
+    for (const kind of ["explain", "translation"] as const) {
+      const body = tutorRequest("anthropic/claude-haiku-4-5", PROMPT, kind);
+      const system = String(body.system);
+      expect(system).toContain("The morphology tags come from a database that can contain errors.");
+      expect(system).toContain("This tag may be a data error; context suggests [X].");
+      expect(system).toContain("Never claim a grammatical feminine is used for a male addressee");
+      expect(system).toContain("the 2ms suffix ‑ְךָ often becomes ‑ָךְ");
+      expect(system).toContain("עִם is a preposition, never a prefix or conjunction");
+      expect(system).not.toContain("and is correct");
+    }
+  });
+
   it("sends Workers AI a system message in the list", () => {
     const body = tutorRequest("@cf/meta/llama-3.3-70b-instruct-fp8-fast", PROMPT);
     const messages = body.messages as { role: string; content: string }[];

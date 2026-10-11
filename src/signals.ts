@@ -575,9 +575,36 @@ function stemCue(gold: string, p: Parts): Cue | undefined {
   }
 }
 
-function suffixCue(field: string, p: Parts): Cue | undefined {
+/**
+ * ָךְ is spelled like the 2fs but is 2ms in two places: Hebrew in pause (ְךָ becomes ָךְ) and
+ * ordinary Biblical Aramaic. Only the addressee tells them apart, so a 2ms gold parse on that
+ * spelling gets this note instead of the table's.
+ */
+const SECOND_MASCULINE_QAMATS_KAF = {
+  // NFD puts the qamats before a dagesh on the same letter
+  test: /ָּ?\/?ךְ$/,
+  display: "ָךְ",
+  who: "second masculine singular, “your” or “you”. It looks like the feminine, but Hebrew spells the 2ms this way in pause (ְךָ becomes ָךְ) and Aramaic always does, so the addressee decides",
+};
+
+function isSecondMasculineSingular(parse: ParseFields | undefined): boolean {
+  return (
+    parse?.suffixPerson === "second" &&
+    parse.suffixGender === "masculine" &&
+    parse.suffixNumber === "singular"
+  );
+}
+
+function suffixCue(
+  field: string,
+  p: Parts,
+  surface: string,
+  parse: ParseFields | undefined
+): Cue | undefined {
   if (!p.suffix) return undefined;
-  const spelling = suffixSpelling(p.suffix);
+  const qamatsKaf =
+    isSecondMasculineSingular(parse) && SECOND_MASCULINE_QAMATS_KAF.test.test(pointed(surface));
+  const spelling = qamatsKaf ? SECOND_MASCULINE_QAMATS_KAF : suffixSpelling(p.suffix);
   if (!spelling) return undefined;
   if (field === "suffix") {
     return {
@@ -627,7 +654,7 @@ export function findCue(
     case "suffixPerson":
     case "suffixGender":
     case "suffixNumber":
-      return suffixCue(field, p);
+      return suffixCue(field, p, word.surface, word.parse);
     case "number":
       return numberCue(gold, p);
     default:
